@@ -373,7 +373,7 @@
                   <!-- AI Spinner for Species Detection -->
                   <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1" id="overallAiSpinner">
                     <div class="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-[10px] text-emerald-400 font-semibold">AIが樹種を解析中...</span>
+                    <span class="text-[10px] text-emerald-400 font-semibold">AIエンジンが樹種を解析中...</span>
                   </div>
 
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputPhoto" />
@@ -608,7 +608,7 @@
                   </div>
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputTrunkFruitingPhoto" onchange="handleAIUpload(this, 'trunk')" />
                 </div>
-                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
@@ -690,8 +690,8 @@
                     <option value="有（1/2以上）">有（1/2以上）</option>
                   </select>
                 </div>
-                <div class="form-group flex flex-col gap-1" for="inputRootExposed">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">露出根の被害</label>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根の被害</label>
                   <input type="text" placeholder="舗装の持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
                 </div>
               </div>
@@ -1041,7 +1041,7 @@
                 次のステップへ
               </button>
               <button type="submit" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10 hidden" id="submitBtn">
-                点検カルテを登録
+                点検カルテを作成
               </button>
             </div>
 
@@ -1049,54 +1049,120 @@
         </div>
 
         <!-- ==========================================
-             VIEW 4: REGISTER SUCCESS SUMMARY
+             VIEW 4: REGISTER SUCCESS SUMMARY (SPA 2-TAB)
              ========================================== -->
         <div class="panel-view hidden flex flex-col gap-5" id="registerSuccessView">
           <div class="flex flex-col items-center justify-center text-center p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl gap-2">
             <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-brand flex items-center justify-center text-brand">
               <i data-lucide="check-circle" class="w-5 h-5"></i>
             </div>
-            <h2 class="text-sm font-bold text-slate-100">点検カルテの登録が完了しました</h2>
+            <h2 class="text-sm font-bold text-slate-100">点検カルテの作成が完了しました</h2>
             <p class="text-[10px] text-slate-400">データはローカルステートへ正常に保存されました。</p>
           </div>
 
-          <!-- Registered Info Card -->
-          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録内容</h3>
-            <div class="grid grid-cols-2 gap-3 text-xs">
-              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">樹木番号</div>
-                <div class="font-bold text-slate-200 mt-0.5" id="successTreeNum">-</div>
+          <!-- Tabs Header -->
+          <div class="flex border-b border-slate-800 text-xs font-semibold">
+            <button type="button" class="flex-1 py-2 text-brand border-b-2 border-brand" id="successTabBtnSummary">1枚目: 基本 & サマリー</button>
+            <button type="button" class="flex-1 py-2 text-slate-400 hover:text-slate-200" id="successTabBtnPhotos">2枚目: 写真 & AI診断</button>
+          </div>
+
+          <!-- Tab Content 1: Summary -->
+          <div id="successTabContentSummary" class="space-y-4">
+            <!-- Registered Info Card -->
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">基本データ</h3>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">樹木番号</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successTreeNum">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">樹種名</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successSpecies">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2">
+                  <div class="text-[10px] text-slate-400 font-semibold">位置情報 (緯度, 経度)</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successLatLng">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">樹高 (H)</div>
+                  <div class="font-bold text-slate-200 mt-0.5"><span id="successHeight">-</span> m</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">幹周 (C)</div>
+                  <div class="font-bold text-slate-200 mt-0.5"><span id="successCirc">-</span> cm</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">樹勢</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successVigor">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 font-semibold">樹形</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successShape">-</div>
+                </div>
               </div>
-              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400 uppercase font-semibold">樹種名</div>
-                <div class="font-bold text-slate-200 mt-0.5" id="successSpecies">-</div>
-              </div>
-              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2 flex justify-between items-center">
+            </div>
+
+            <!-- Risk Status Card -->
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">総合危険度と推奨処置</h3>
+              <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
                 <div>
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">総合危険度ランク</div>
+                  <div class="text-[10px] text-slate-400 font-semibold">総合危険度ランク</div>
                   <div class="font-bold text-slate-200 mt-0.5" id="successRiskLabel">-</div>
                 </div>
                 <span class="text-xs px-2.5 py-1 font-bold rounded-lg border" id="successRiskBadge">RANK I</span>
               </div>
+              
+              <!-- Recommendations by Part -->
+              <div class="overflow-hidden border border-slate-800 rounded-lg text-[10px] bg-slate-900/30">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 font-semibold">
+                      <th class="p-2">部位</th>
+                      <th class="p-2">危険度</th>
+                      <th class="p-2">推奨処置</th>
+                    </tr>
+                  </thead>
+                  <tbody id="successPartTreatmentTable">
+                    <!-- Rows populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Notes -->
+              <div class="bg-slate-900/40 border border-slate-800 p-2.5 rounded-lg text-xs space-y-1">
+                <div class="text-[10px] text-slate-400 font-semibold">処置 of 留意点:</div>
+                <p class="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap" id="successActionNotes">-</p>
+              </div>
             </div>
           </div>
 
-          <!-- AI Inference Engine Log -->
-          <div class="bg-slate-950/40 border border-slate-850 rounded-xl p-4 space-y-2">
-            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand"></i>
-              AI推論エンジン ログ
-            </h3>
-            <div class="font-mono text-[9px] text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-850 space-y-1 max-h-40 overflow-y-auto custom-scrollbar" id="successAiLogs">
-              <!-- Logs populated dynamically -->
+          <!-- Tab Content 2: Photos & AI Diagnosis -->
+          <div id="successTabContentPhotos" class="hidden space-y-4">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録写真とAI判定結果</h3>
+              <div class="flex flex-col gap-3" id="successPhotosGrid">
+                <!-- Dynamically populated photos and AI texts -->
+              </div>
+            </div>
+
+            <!-- AI Engine System Logs -->
+            <div class="bg-slate-950/40 border border-slate-855 rounded-xl p-4 space-y-2">
+              <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand"></i>
+                AI推論エンジン ログ
+              </h3>
+              <div class="font-mono text-[9px] text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-855 space-y-1 max-h-32 overflow-y-auto custom-scrollbar" id="successAiLogs">
+                <!-- Logs populated dynamically -->
+              </div>
             </div>
           </div>
 
           <!-- Action Button -->
-          <button class="w-full py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="reloadBtn">
+          <button type="button" class="w-full py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="reloadBtn">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            新しい点検カルテを作成する
+            新しい点検カルテを作成
           </button>
         </div>
 
@@ -1379,6 +1445,21 @@
     const successRiskBadge = document.getElementById('successRiskBadge');
     const successAiLogs = document.getElementById('successAiLogs');
     const reloadBtn = document.getElementById('reloadBtn');
+
+    // Register Success 2-Tab Elements
+    const successTabBtnSummary = document.getElementById('successTabBtnSummary');
+    const successTabBtnPhotos = document.getElementById('successTabBtnPhotos');
+    const successTabContentSummary = document.getElementById('successTabContentSummary');
+    const successTabContentPhotos = document.getElementById('successTabContentPhotos');
+
+    const successLatLng = document.getElementById('successLatLng');
+    const successHeight = document.getElementById('successHeight');
+    const successCirc = document.getElementById('successCirc');
+    const successVigor = document.getElementById('successVigor');
+    const successShape = document.getElementById('successShape');
+    const successPartTreatmentTable = document.getElementById('successPartTreatmentTable');
+    const successActionNotes = document.getElementById('successActionNotes');
+    const successPhotosGrid = document.getElementById('successPhotosGrid');
 
     // Wizard Navigation Elements
     const prevStepBtn = document.getElementById('prevStepBtn');
@@ -1762,7 +1843,7 @@
           <div class="h-44 bg-slate-950 flex items-center justify-center overflow-hidden">
             <img src="${item.data.photo}" alt="AI" class="w-full h-full object-cover" />
           </div>
-          <div class="p-3 bg-emerald-950/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
+          <div class="p-3 bg-emerald-955/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
             <div class="flex items-center gap-1.5 font-semibold">
               <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
               <span>AI判定: ${item.data.name}の可能性</span>
@@ -2169,9 +2250,15 @@
       state.trees.push(newTree);
       renderMarkers();
       
-      // Populate success view details
+      // Populate success view 1st tab details
       successTreeNum.innerText = newTree.treeNum || '-';
       successSpecies.innerText = newTree.species || '-';
+      successLatLng.innerText = `${newTree.lat.toFixed(6)}, ${newTree.lng.toFixed(6)}`;
+      successHeight.innerText = newTree.height || '-';
+      successCirc.innerText = newTree.circ || '-';
+      successVigor.innerText = vigorLabels[newTree.vigor] || '-';
+      successShape.innerText = vigorLabels[newTree.shape] || '-';
+      successActionNotes.innerText = newTree.actionNotes || '特記すべき留意点はありません。';
       
       const riskDescription = riskLabels[newTree.risk] || `RANK ${newTree.risk}`;
       successRiskLabel.innerText = riskDescription;
@@ -2184,8 +2271,84 @@
       successRiskBadge.className = `text-xs px-2.5 py-1 font-bold rounded-lg border ${badgeColorClass}`;
       successRiskBadge.innerText = `RANK ${newTree.risk}`;
 
+      // Populate success part treatment table
+      successPartTreatmentTable.innerHTML = '';
+      const successParts = [
+        { name: '枝 (Branches)', eval: newTree.evalBranch },
+        { name: '幹 (Trunk)', eval: newTree.evalTrunk },
+        { name: '根元・根 (Root)', eval: newTree.evalRoot },
+        { name: '交通障害 (Traffic)', eval: newTree.evalTraffic }
+      ];
+      successParts.forEach(part => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-slate-800 hover:bg-slate-900/40 transition-colors';
+        let riskColor = 'text-brand';
+        if (part.eval.risk === 'II') riskColor = 'text-amber-400';
+        if (part.eval.risk === 'III') riskColor = 'text-orange-400';
+        if (part.eval.risk === 'IV') riskColor = 'text-red-400';
+        
+        row.innerHTML = `
+          <td class="p-2 font-bold text-slate-300">${part.name}</td>
+          <td class="p-2 ${riskColor} font-bold">RANK ${part.eval.risk}</td>
+          <td class="p-2 text-slate-200">${part.eval.action || 'なし'}</td>
+        `;
+        successPartTreatmentTable.appendChild(row);
+      });
+
+      // Populate success view 2nd tab photo grid with base64 / mock AI predictions
+      successPhotosGrid.innerHTML = '';
+      const photosToRender = [
+        { label: '全体（全景写真）', data: newTree.photo ? { photo: newTree.photo, name: 'GPS座標および撮影位置確認済', rate: 'GPS抽出' } : null },
+        { label: '枝の病害虫写真', data: newTree.branchPestResult },
+        { label: '幹の病害虫写真', data: newTree.trunkPestResult },
+        { label: '幹の子実体写真', data: newTree.trunkFruitingResult },
+        { label: '根元の病害虫写真', data: newTree.rootPestResult },
+        { label: '根元の子実体写真', data: newTree.rootFruitingResult }
+      ];
+      
+      let successPhotoCount = 0;
+      photosToRender.forEach(item => {
+        if (!item.data) return;
+        successPhotoCount++;
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col sm:flex-row gap-3 p-3';
+        
+        let aiText = '';
+        if (item.data.rate === 'GPS抽出') {
+          aiText = `<div class="text-[10px] text-brand font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>ステータス: GPS座標解析完了</div>`;
+        } else {
+          aiText = `
+            <div class="text-[10px] text-brand font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>AI検出: ${item.data.name}</div>
+            <div class="text-[9px] text-slate-400 mt-0.5">信頼度・一致率: ${item.data.rate}</div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="w-full sm:w-20 h-20 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex-shrink-0">
+            <img src="${item.data.photo}" alt="${item.label}" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1 flex flex-col justify-center py-1">
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${item.label}</span>
+            <div class="mt-1">${aiText}</div>
+          </div>
+        `;
+        successPhotosGrid.appendChild(card);
+      });
+      
+      if (successPhotoCount === 0) {
+        successPhotosGrid.innerHTML = `
+          <div class="flex flex-col items-center justify-center p-8 bg-slate-950/40 border border-slate-800 rounded-xl text-xs text-slate-500 gap-2">
+            <i data-lucide="image-off" class="w-8 h-8 text-slate-700"></i>
+            <span>アップロードされた写真はありません (画像なし)</span>
+          </div>
+        `;
+      }
+
       // Populate AI inference engine logs
       generateSuccessAiLogs(newTree);
+
+      // Default to 1st tab
+      switchSuccessTab('summary');
 
       switchMode('register_success');
       lucide.createIcons();
@@ -2210,6 +2373,23 @@
     reloadBtn.addEventListener('click', () => {
       location.reload();
     });
+
+    function switchSuccessTab(tabName) {
+      if (tabName === 'summary') {
+        successTabBtnSummary.className = 'flex-1 py-2 text-brand border-b-2 border-brand';
+        successTabBtnPhotos.className = 'flex-1 py-2 text-slate-400 hover:text-slate-200 border-b border-slate-800';
+        successTabContentSummary.classList.remove('hidden');
+        successTabContentPhotos.classList.add('hidden');
+      } else {
+        successTabBtnSummary.className = 'flex-1 py-2 text-slate-400 hover:text-slate-200 border-b border-slate-800';
+        successTabBtnPhotos.className = 'flex-1 py-2 text-brand border-b-2 border-brand';
+        successTabContentSummary.classList.add('hidden');
+        successTabContentPhotos.classList.remove('hidden');
+      }
+    }
+
+    successTabBtnSummary.addEventListener('click', () => switchSuccessTab('summary'));
+    successTabBtnPhotos.addEventListener('click', () => switchSuccessTab('photos'));
 
     function generateSuccessAiLogs(tree) {
       successAiLogs.innerHTML = '';
