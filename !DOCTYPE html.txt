@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>樹木管理ダッシュボード | Pirates of Arborian</title>
+  
+  <!-- Google Fonts: Inter & Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <style>
+    /* ==========================================================================
+       Design Tokens & CSS Variables
+       ========================================================================== */
+    :root {
+      --bg-panel: #1e293b; /* Slate 800 */
+      --bg-panel-dark: #0f172a; /* Slate 900 */
+      --bg-card: #334155; /* Slate 700 */
+      --bg-card-hover: #475569; /* Slate 600 */
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: #4ade80;
+      
+      --text-white: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --accent-color: #4ade80; /* ネオングリーン */
+      --accent-glow: rgba(74, 222, 128, 0.25);
+      
+      --risk-i: #10b981; /* 緑 */
+      --risk-ii: #f59e0b; /* 黄 */
+      --risk-iii: #f97316; /* オレンジ */
+      --risk-iv: #ef4444; /* 赤 */
+      --color-temp: #3b82f6; /* 青 (仮ピン) */
+      
+      --font-sans: 'Inter', 'Noto Sans JP', sans-serif;
+      --transition-speed: 0.25s;
+    }
+
+    /* ==========================================================================
+       Reset & Base Layout
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      background-color: var(--bg-panel-dark);
+      color: var(--text-white);
+    }
+
+    .dashboard-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       Left Side: Side Panel (350px width)
+       ========================================================================== */
+    .side-panel {
+      width: 350px;
+      height: 100%;
+      background-color: var(--bg-panel);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 10;
+      box-shadow: 10px 0 25px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Panel Header */
+    .panel-header {
+      padding: 24px 20px;
+      background-color: var(--bg-panel-dark);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 32px;
+      height: 32px;
+      background: rgba(74, 222, 128, 0.15);
+      border: 2px solid var(--accent-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--accent-color);
+      font-size: 15px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .logo-text-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-subtitle {
+      font-size: 10px;
+      color: var(--accent-color);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    /* Scrollable panel body */
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    /* Custom Scrollbar */
+    .panel-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .panel-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .panel-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    .panel-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* View container toggle states */
+    .panel-view {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn var(--transition-speed) ease-in-out;
+    }
+
+    .panel-view.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       Mode A: Summary Mode styles
+       ========================================================================== */
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    /* Stats summary card */
+    .stats-card {
+      background-color: var(--bg-panel-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .stat-value.accent {
+      color: var(--accent-color);
+    }
+
+    /* Green Register trigger button */
+    .btn-create {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: var(--bg-panel-dark);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px var(--accent-glow);
+      transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    }
+
+    .btn-create:hover {
+      background-color: #34d399;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+    }
+
+    .btn-create:active {
+      transform: translateY(0);
+    }
+
+    /* Tree items in list */
+    .tree-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tree-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+    }
+
+    .tree-item:hover {
+      transform: translateX(4px);
+      border-color: var(--border-focus);
+      background-color: var(--bg-card-hover);
+    }
+
+    .tree-item-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tree-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .tree-item-id {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Risk labels/badges */
+    .risk-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+
+    .badge-i { background-color: rgba(16, 185, 129, 0.15); color: var(--risk-i); border: 1px solid var(--risk-i); }
+    .badge-ii { background-color: rgba(245, 158, 11, 0.15); color: var(--risk-ii); border: 1px solid var(--risk-ii); }
+    .badge-iii { background-color: rgba(249, 115, 22, 0.15); color: var(--risk-iii); border: 1px solid var(--risk-iii); }
+    .badge-iv { background-color: rgba(239, 68, 68, 0.15); color: var(--risk-iv); border: 1px solid var(--risk-iv); }
+
+    /* ==========================================================================
+       Mode B: Tree Detail Mode styles
+       ========================================================================== */
+    .back-btn {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-white);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-speed);
+      align-self: flex-start;
+    }
+
+    .back-btn:hover {
+      background-color: var(--bg-card);
+      border-color: var(--border-focus);
+    }
+
+    .detail-card {
+      background-color: var(--bg-panel-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .detail-photo-wrapper {
+      width: 100%;
+      height: 180px;
+      background-color: #1e293b;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .detail-photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Fallback dynamic tree graphics using inline CSS */
+    .fallback-tree-graphic {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+    }
+
+    .detail-info-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .detail-title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-tree-name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .detail-tree-id {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .detail-divider {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-spec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .detail-spec-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .detail-spec-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .detail-spec-value {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* Vigor labels */
+    .vigor-text {
+      font-weight: 700;
+    }
+    .vigor-1 { color: #10b981; }
+    .vigor-2 { color: #34d399; }
+    .vigor-3 { color: #fbbf24; }
+    .vigor-4 { color: #f97316; }
+    .vigor-5 { color: #ef4444; }
+
+    /* ==========================================================================
+       Mode C: New Registration Form styles
+       ========================================================================== */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Text/Number Inputs and Selects */
+    .input-field {
+      width: 100%;
+      height: 40px;
+      background-color: var(--bg-panel-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--text-white);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      transition: border-color var(--transition-speed);
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--border-focus);
+    }
+
+    .input-field::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Double inline inputs */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    /* Location Input Group with click alert */
+    .location-notice {
+      font-size: 11px;
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      animation: blink 1.5s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .input-field.location {
+      background-color: rgba(15, 23, 42, 0.4);
+      color: var(--accent-color);
+      font-weight: 600;
+      border-style: dashed;
+    }
+
+    /* Photo Upload UI */
+    .photo-upload-container {
+      width: 100%;
+      height: 120px;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-panel-dark);
+      transition: border-color var(--transition-speed), background-color var(--transition-speed);
+    }
+
+    .photo-upload-container:hover {
+      border-color: var(--border-focus);
+      background-color: rgba(74, 222, 128, 0.02);
+    }
+
+    .photo-upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .photo-upload-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-upload-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Form action buttons */
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: var(--bg-panel-dark);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px var(--accent-glow);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: #34d399;
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================================
+       Right Side: Map Container
+       ========================================================================== */
+    #map {
+      flex: 1;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* ==========================================================================
+       Leaflet Map Customizations (Dark Theme compatibility)
+       ========================================================================== */
+    .leaflet-control-zoom {
+      border: 1px solid var(--border-color) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+    .leaflet-control-zoom a {
+      background-color: var(--bg-panel-dark) !important;
+      color: var(--text-white) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background-color: var(--bg-card-hover) !important;
+    }
+    .leaflet-bar {
+      border-radius: 8px !important;
+      overflow: hidden;
+    }
+    .leaflet-attribution-container {
+      background: rgba(15, 23, 42, 0.8) !important;
+      color: var(--text-muted) !important;
+    }
+
+    /* Custom Leaflet Markers */
+    .custom-marker-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .marker-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--bg-panel-dark);
+      z-index: 2;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease;
+    }
+    .marker-dot.risk-i { background-color: var(--risk-i); }
+    .marker-dot.risk-ii { background-color: var(--risk-ii); }
+    .marker-dot.risk-iii { background-color: var(--risk-iii); }
+    .marker-dot.risk-iv { background-color: var(--risk-iv); }
+    .marker-dot.temp { background-color: var(--color-temp); }
+
+    .marker-pulse {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      z-index: 1;
+      animation: markerPulse 2s infinite cubic-bezier(0.24, 0, 0.38, 1);
+      pointer-events: none;
+    }
+    .marker-pulse.risk-i { background-color: rgba(16, 185, 129, 0.35); }
+    .marker-pulse.risk-ii { background-color: rgba(245, 158, 11, 0.35); }
+    .marker-pulse.risk-iii { background-color: rgba(249, 115, 22, 0.35); }
+    .marker-pulse.risk-iv { background-color: rgba(239, 68, 68, 0.35); }
+    .marker-pulse.temp { background-color: rgba(59, 130, 246, 0.45); animation: tempPulse 1.2s infinite ease-out; }
+
+    .custom-marker-wrapper.active .marker-dot {
+      transform: scale(1.3);
+      border-color: var(--text-white);
+    }
+
+    @keyframes markerPulse {
+      0% { transform: scale(0.6); opacity: 0.8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    @keyframes tempPulse {
+      0% { transform: scale(0.8); opacity: 0.9; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- Left Side: Side Panel -->
+    <aside class="side-panel" id="sidePanel">
+      
+      <!-- Top Branding header -->
+      <div class="panel-header">
+        <div class="logo-box">ai</div>
+        <div class="logo-text-wrapper">
+          <span class="logo-title">Pirates of Arborian</span>
+          <span class="logo-subtitle">樹木管理DXシステム</span>
+        </div>
+      </div>
+
+      <!-- Main body containing switchable views -->
+      <div class="panel-body">
+        
+        <!-- [A. Summary Mode] -->
+        <div class="panel-view" id="summaryView">
+          <!-- Summary statistics -->
+          <div class="stats-card">
+            <h3 class="section-title">全体点検状況</h3>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">総管理樹木</span>
+                <span class="stat-value" id="statTotal">3</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">危険度III・IV</span>
+                <span class="stat-value" id="statDanger" style="color: var(--risk-iv)">1</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">要観察率</span>
+                <span class="stat-value accent" id="statAttentionRate">66%</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">システム状態</span>
+                <span class="stat-value" style="font-size: 13px; color: var(--accent-color); display: flex; align-items: center; gap: 4px; margin-top: 6px;">
+                  <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-color); display: inline-block;"></span>
+                  接続良好
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action trigger button -->
+          <button class="btn-create" id="triggerRegisterBtn">
+            <!-- Plus Icon -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            新規点検カルテを作成
+          </button>
+
+          <!-- List block -->
+          <div>
+            <h3 class="section-title">登録樹木カルテ一覧</h3>
+            <div class="tree-list" id="treeList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- [B. Tree Detail Mode] -->
+        <div class="panel-view hidden" id="detailView">
+          <button class="back-btn" id="backToSummaryBtn">
+            <!-- Arrow left -->
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            一覧に戻る
+          </button>
+
+          <div class="detail-card">
+            <!-- Photo/Placeholder area -->
+            <div class="detail-photo-wrapper">
+              <div class="fallback-tree-graphic" id="detailTreeFallbackGraphic">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 19V5"></path>
+                  <path d="M19 12a7 7 0 0 0-14 0c0 3.87 3.13 7 7 7"></path>
+                </svg>
+              </div>
+              <img src="" alt="Tree Photo" class="hidden" id="detailTreePhoto">
+            </div>
+
+            <!-- Content Area -->
+            <div class="detail-info-body">
+              <div class="detail-row-header">
+                <div class="detail-title-group">
+                  <span class="detail-tree-name" id="detailTreeName">ケヤキ</span>
+                  <span class="detail-tree-id" id="detailTreeId">TR-001</span>
+                </div>
+                <span class="risk-badge badge-i" id="detailRiskBadge">RANK I</span>
+              </div>
+
+              <div class="detail-divider"></div>
+
+              <!-- Technical Specifications Grid -->
+              <div class="detail-spec-grid">
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">樹高 (H)</div>
+                  <div class="detail-spec-value"><span id="detailTreeHeight">15.0</span> m</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">幹周 (C)</div>
+                  <div class="detail-spec-value"><span id="detailTreeCirc">65</span> cm</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">樹勢健全度</div>
+                  <div class="detail-spec-value vigor-text" id="detailTreeVigor">良い</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">位置情報</div>
+                  <div class="detail-spec-value" style="font-size: 11px; font-weight: 500;" id="detailTreeLatLng">35.6865, 139.7090</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- [C. New Registration Mode] -->
+        <div class="panel-view hidden" id="registerView">
+          <button class="back-btn" id="cancelRegisterBtn">
+            キャンセル
+          </button>
+          
+          <h2 class="logo-title" style="font-size: 18px;">点検カルテ新規登録</h2>
+
+          <!-- Form Area -->
+          <form id="registrationForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
+            
+            <!-- Photo Upload with Preview -->
+            <div class="form-group">
+              <label class="form-label">樹木写真の登録</label>
+              <div class="photo-upload-container">
+                <div class="photo-upload-placeholder" id="photoPlaceholder">
+                  <!-- Upload Icon -->
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>クリックして写真を選択</span>
+                </div>
+                <img src="" alt="Preview" class="photo-upload-preview hidden" id="previewImg">
+                <input type="file" accept="image/*" class="photo-upload-input" id="inputPhoto">
+              </div>
+            </div>
+
+            <!-- Click Map guidance notice & Position inputs -->
+            <div class="form-group">
+              <label class="form-label">位置情報 (緯度・経度)</label>
+              <div class="location-notice">
+                <!-- Location indicator symbol -->
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                地図をクリックして位置を取得してください
+              </div>
+              <div class="form-row-2">
+                <input type="text" placeholder="緯度" class="input-field location" id="inputLat" readonly required>
+                <input type="text" placeholder="経度" class="input-field location" id="inputLng" readonly required>
+              </div>
+            </div>
+
+            <!-- Species -->
+            <div class="form-group">
+              <label class="form-label" for="inputSpecies">樹種名</label>
+              <input type="text" placeholder="例: ケヤキ、ソメイヨシノ" class="input-field" id="inputSpecies" required>
+            </div>
+
+            <!-- Height & Circumference (Row) -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="inputHeight">樹高 (m)</label>
+                <input type="number" step="0.1" placeholder="m" class="input-field" id="inputHeight" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputCirc">幹周 (cm)</label>
+                <input type="number" placeholder="cm" class="input-field" id="inputCirc" required>
+              </div>
+            </div>
+
+            <!-- Vigor Select -->
+            <div class="form-group">
+              <label class="form-label" for="selectVigor">樹勢（健全度）</label>
+              <select class="input-field" id="selectVigor" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
+                <option value="1">1:良い</option>
+                <option value="2" selected>2:普通</option>
+                <option value="3">3:少し悪い</option>
+                <option value="4">4:悪い</option>
+                <option value="5">5:枯死</option>
+              </select>
+            </div>
+
+            <!-- Danger Select -->
+            <div class="form-group">
+              <label class="form-label" for="selectRisk">危険度ランク (街路樹点検マニュアル)</label>
+              <select class="input-field" id="selectRisk" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
+                <option value="I" selected>I: 被害無〜小</option>
+                <option value="II">II: 被害中</option>
+                <option value="III">III: 倒伏危険性低</option>
+                <option value="IV">IV: 倒伏危険性高</option>
+              </select>
+            </div>
+
+            <!-- Submit action -->
+            <div class="form-actions">
+              <button type="submit" class="btn-submit" id="submitBtn">
+                点検カルテを登録
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Right Side: Map Container -->
+    <main id="map"></main>
+
+  </div>
+
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <script>
+    /* ==========================================================================
+       Mock Data & Application State
+       ========================================================================== */
+    const state = {
+      mode: 'summary', // 'summary', 'detail', 'register'
+      selectedTreeId: null,
+      tempMarker: null,
+      selectedLatLng: null,
+      uploadedPhotoBase64: null,
+      trees: [
+        {
+          id: 'TR-001',
+          species: 'ケヤキ',
+          lat: 35.6865,
+          lng: 139.7090,
+          height: 15.0,
+          circ: 65,
+          vigor: 1, // 良い
+          risk: 'I', // 被害無〜小
+          photo: null
+        },
+        {
+          id: 'TR-002',
+          species: 'ソメイヨシノ',
+          lat: 35.6842,
+          lng: 139.7112,
+          height: 8.5,
+          circ: 35,
+          vigor: 3, // 少し悪い
+          risk: 'II', // 被害中
+          photo: null
+        },
+        {
+          id: 'TR-003',
+          species: 'イチョウ',
+          lat: 35.6828,
+          lng: 139.7080,
+          height: 18.0,
+          circ: 80,
+          vigor: 4, // 悪い
+          risk: 'IV', // 倒伏危険性高
+          photo: null
+        }
+      ]
+    };
+
+    const vigorLabels = {
+      1: '良い',
+      2: '普通',
+      3: '少し悪い',
+      4: '悪い',
+      5: '枯死'
+    };
+
+    const riskLabels = {
+      'I': 'I: 被害無〜小',
+      'II': 'II: 被害中',
+      'III': 'III: 倒伏危険性低',
+      'IV': 'IV: 倒伏危険性高'
+    };
+
+    /* ==========================================================================
+       DOM Elements
+       ========================================================================== */
+    const summaryView = document.getElementById('summaryView');
+    const detailView = document.getElementById('detailView');
+    const registerView = document.getElementById('registerView');
+    
+    const triggerRegisterBtn = document.getElementById('triggerRegisterBtn');
+    const backToSummaryBtn = document.getElementById('backToSummaryBtn');
+    const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    const treeListContainer = document.getElementById('treeList');
+    
+    // Form elements
+    const registrationForm = document.getElementById('registrationForm');
+    const inputPhoto = document.getElementById('inputPhoto');
+    const previewImg = document.getElementById('previewImg');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
+    const inputLat = document.getElementById('inputLat');
+    const inputLng = document.getElementById('inputLng');
+    const inputSpecies = document.getElementById('inputSpecies');
+    const inputHeight = document.getElementById('inputHeight');
+    const inputCirc = document.getElementById('inputCirc');
+    const selectVigor = document.getElementById('selectVigor');
+    const selectRisk = document.getElementById('selectRisk');
+
+    // Details elements
+    const detailTreePhoto = document.getElementById('detailTreePhoto');
+    const detailTreeFallbackGraphic = document.getElementById('detailTreeFallbackGraphic');
+    const detailTreeName = document.getElementById('detailTreeName');
+    const detailTreeId = document.getElementById('detailTreeId');
+    const detailRiskBadge = document.getElementById('detailRiskBadge');
+    const detailTreeHeight = document.getElementById('detailTreeHeight');
+    const detailTreeCirc = document.getElementById('detailTreeCirc');
+    const detailTreeVigor = document.getElementById('detailTreeVigor');
+    const detailTreeLatLng = document.getElementById('detailTreeLatLng');
+
+    /* ==========================================================================
+       Map & Leaflet Marker setups
+       ========================================================================== */
+    let map = null;
+    let markers = {};
+
+    function initMap() {
+      // Shinjuku Gyoen focus
+      map = L.map('map', {
+        zoomControl: true,
+        attributionControl: true
+      }).setView([35.6850, 139.7100], 16);
+
+      // CartoDB Dark Matter tile layer
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+      }).addTo(map);
+
+      // Move zoom control
+      map.zoomControl.setPosition('topright');
+
+      // Map click handler (for position fetching in register mode)
+      map.on('click', (e) => {
+        if (state.mode !== 'register') return;
+        const { lat, lng } = e.latlng;
+        state.selectedLatLng = e.latlng;
+        
+        inputLat.value = lat.toFixed(6);
+        inputLng.value = lng.toFixed(6);
+        
+        // Render or update temporary marker
+        if (state.tempMarker) {
+          state.tempMarker.setLatLng(e.latlng);
+        } else {
+          const tempIcon = createCustomMarkerIcon('temp');
+          state.tempMarker = L.marker(e.latlng, { icon: tempIcon }).addTo(map);
+        }
+      });
+    }
+
+    function createCustomMarkerIcon(riskClass) {
+      return L.divIcon({
+        className: 'custom-marker-wrapper',
+        html: `
+          <div class="marker-pulse ${riskClass}"></div>
+          <div class="marker-dot ${riskClass}"></div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      });
+    }
+
+    function renderMarkers() {
+      // Clear existing markers from map
+      Object.keys(markers).forEach(id => {
+        map.removeLayer(markers[id]);
+      });
+      markers = {};
+
+      // Draw all markers from state
+      state.trees.forEach(tree => {
+        const riskClass = 'risk-' + tree.risk.toLowerCase();
+        const icon = createCustomMarkerIcon(riskClass);
+        const marker = L.marker([tree.lat, tree.lng], { icon: icon }).addTo(map);
+        
+        markers[tree.id] = marker;
+
+        // Custom marker click listener
+        marker.on('click', () => {
+          selectTree(tree.id);
+          // Pan map offset slightly to accommodate sidebar width
+          const offsetLng = window.innerWidth > 768 ? -0.001 : 0;
+          map.setView([tree.lat, tree.lng + offsetLng], 17, { animate: true, duration: 0.6 });
+        });
+      });
+    }
+
+    /* ==========================================================================
+       Mode Navigation State Machine
+       ========================================================================== */
+    function switchMode(newMode) {
+      state.mode = newMode;
+      
+      // Hide all panels
+      summaryView.classList.add('hidden');
+      detailView.classList.add('hidden');
+      registerView.classList.add('hidden');
+
+      // Map highlight resets
+      Object.keys(markers).forEach(id => {
+        const el = markers[id].getElement();
+        if (el) el.classList.remove('active');
+      });
+
+      // Temporary marker cleanup if exiting register mode
+      if (newMode !== 'register' && state.tempMarker) {
+        map.removeLayer(state.tempMarker);
+        state.tempMarker = null;
+        state.selectedLatLng = null;
+      }
+
+      // Display selected panel & perform initialization
+      if (newMode === 'summary') {
+        summaryView.classList.remove('hidden');
+        populateTreeList();
+        calculateStats();
+      } else if (newMode === 'detail') {
+        detailView.classList.remove('hidden');
+      } else if (newMode === 'register') {
+        registerView.classList.remove('hidden');
+        resetForm();
+      }
+    }
+
+    /* ==========================================================================
+       Summary Mode: Population & Stats calculation
+       ========================================================================== */
+    function populateTreeList() {
+      treeListContainer.innerHTML = '';
+      state.trees.forEach(tree => {
+        const item = document.createElement('div');
+        item.className = 'tree-item';
+        item.dataset.id = tree.id;
+        
+        const riskClass = 'badge-' + tree.risk.toLowerCase();
+        item.innerHTML = `
+          <div class="tree-item-left">
+            <span class="tree-item-name">${tree.species}</span>
+            <span class="tree-item-id">${tree.id}</span>
+          </div>
+          <span class="risk-badge ${riskClass}">RANK ${tree.risk}</span>
+        `;
+
+        item.addEventListener('click', () => {
+          selectTree(tree.id);
+          const offsetLng = window.innerWidth > 768 ? -0.001 : 0;
+          map.setView([tree.lat, tree.lng + offsetLng], 17, { animate: true, duration: 0.6 });
+        });
+
+        treeListContainer.appendChild(item);
+      });
+    }
+
+    function calculateStats() {
+      const total = state.trees.length;
+      const dangerous = state.trees.filter(t => t.risk === 'III' || t.risk === 'IV').length;
+      const attentionRate = total > 0 ? Math.round((state.trees.filter(t => t.risk !== 'I').length / total) * 100) : 0;
+
+      document.getElementById('statTotal').innerText = total;
+      document.getElementById('statDanger').innerText = dangerous;
+      document.getElementById('statAttentionRate').innerText = `${attentionRate}%`;
+    }
+
+    /* ==========================================================================
+       Detail Mode: Fill fields & Render
+       ========================================================================== */
+    function selectTree(treeId) {
+      state.selectedTreeId = treeId;
+      const tree = state.trees.find(t => t.id === treeId);
+      if (!tree) return;
+
+      switchMode('detail');
+
+      // Highlight active marker on map
+      const marker = markers[treeId];
+      if (marker) {
+        const el = marker.getElement();
+        if (el) el.classList.add('active');
+      }
+
+      // Populate details
+      detailTreeId.innerText = tree.id;
+      detailTreeName.innerText = tree.species;
+      detailTreeHeight.innerText = tree.height.toFixed(1);
+      detailTreeCirc.innerText = tree.circ;
+      detailTreeLatLng.innerText = `${tree.lat.toFixed(5)}, ${tree.lng.toFixed(5)}`;
+      
+      // Vigor class & label mapping
+      detailTreeVigor.innerText = vigorLabels[tree.vigor];
+      detailTreeVigor.className = 'detail-spec-value vigor-text vigor-' + tree.vigor;
+
+      // Risk class mapping
+      detailRiskBadge.className = 'risk-badge badge-' + tree.risk.toLowerCase();
+      detailRiskBadge.innerText = 'RANK ' + tree.risk;
+
+      // Photo rendering (Fallback check)
+      if (tree.photo) {
+        detailTreePhoto.src = tree.photo;
+        detailTreePhoto.classList.remove('hidden');
+        detailTreeFallbackGraphic.classList.add('hidden');
+      } else {
+        detailTreePhoto.classList.add('hidden');
+        detailTreeFallbackGraphic.classList.remove('hidden');
+      }
+    }
+
+    /* ==========================================================================
+       Register Mode: Photo Upload & Submit Card logic
+       ========================================================================== */
+    function resetForm() {
+      registrationForm.reset();
+      previewImg.src = '';
+      previewImg.classList.add('hidden');
+      photoPlaceholder.classList.remove('hidden');
+      state.uploadedPhotoBase64 = null;
+      inputLat.value = '';
+      inputLng.value = '';
+    }
+
+    // Photo input change (Base64 file reader preview)
+    inputPhoto.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          state.uploadedPhotoBase64 = event.target.result;
+          previewImg.src = state.uploadedPhotoBase64;
+          previewImg.classList.remove('hidden');
+          photoPlaceholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Form submission
+    registrationForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const lat = parseFloat(inputLat.value);
+      const lng = parseFloat(inputLng.value);
+      
+      if (isNaN(lat) || isNaN(lng)) {
+        alert('地図をクリックして、位置情報（緯度・経度）を取得してください。');
+        return;
+      }
+
+      // Generate ID
+      const nextIdNum = state.trees.length + 1;
+      const nextIdStr = 'TR-' + String(nextIdNum).padStart(3, '0');
+
+      // Create new Tree item
+      const newTree = {
+        id: nextIdStr,
+        species: inputSpecies.value.trim(),
+        lat: lat,
+        lng: lng,
+        height: parseFloat(inputHeight.value),
+        circ: parseInt(inputCirc.value, 10),
+        vigor: parseInt(selectVigor.value, 10),
+        risk: selectRisk.value,
+        photo: state.uploadedPhotoBase64
+      };
+
+      // Push to state & Re-render Map pins
+      state.trees.push(newTree);
+      renderMarkers();
+
+      // Clear & switch
+      alert(`樹木カルテ ${nextIdStr} を正常に登録しました。`);
+      switchMode('summary');
+    });
+
+    /* ==========================================================================
+       Setup Listeners & Start
+       ========================================================================== */
+    triggerRegisterBtn.addEventListener('click', () => switchMode('register'));
+    backToSummaryBtn.addEventListener('click', () => switchMode('summary'));
+    cancelRegisterBtn.addEventListener('click', () => switchMode('summary'));
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      renderMarkers();
+      switchMode('summary');
+    });
+  </script>
+</body>
+</html>
