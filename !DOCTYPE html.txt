@@ -55,6 +55,8 @@
     html, body {
       width: 100%;
       height: 100%;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
       font-family: var(--font-sans);
       background-color: var(--bg-panel-dark);
@@ -62,8 +64,8 @@
     }
 
     .dashboard-container {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       display: flex;
       margin: 0;
       overflow: hidden;
@@ -671,6 +673,59 @@
       0% { transform: scale(0.8); opacity: 0.9; }
       100% { transform: scale(2.6); opacity: 0; }
     }
+
+    /* ==========================================================================
+       Custom Leaflet Popup Styles (Dark Theme)
+       ========================================================================== */
+    .custom-leaflet-popup .leaflet-popup-content-wrapper {
+      background-color: var(--bg-panel-dark);
+      color: var(--text-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .custom-leaflet-popup .leaflet-popup-tip {
+      background-color: var(--bg-panel-dark);
+      border: 1px solid var(--border-color);
+    }
+    .custom-leaflet-popup .leaflet-popup-close-button {
+      color: var(--text-muted) !important;
+      padding: 8px 10px 0 0 !important;
+    }
+    .custom-leaflet-popup .leaflet-popup-close-button:hover {
+      color: var(--text-white) !important;
+    }
+    .custom-leaflet-popup .leaflet-popup-content {
+      margin: 8px 12px !important;
+      line-height: 1.4;
+    }
+    .popup-content-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .popup-content-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 12px;
+      font-size: 11px;
+    }
+    .popup-content-label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .popup-content-value {
+      text-align: right;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -777,20 +832,28 @@
               <!-- Technical Specifications Grid -->
               <div class="detail-spec-grid">
                 <div class="detail-spec-item">
-                  <div class="detail-spec-label">樹高 (H)</div>
-                  <div class="detail-spec-value"><span id="detailTreeHeight">15.0</span> m</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">幹周 (C)</div>
-                  <div class="detail-spec-value"><span id="detailTreeCirc">65</span> cm</div>
+                  <div class="detail-spec-label">樹木番号</div>
+                  <div class="detail-spec-value" id="detailTreeNum">-</div>
                 </div>
                 <div class="detail-spec-item">
                   <div class="detail-spec-label">樹勢健全度</div>
-                  <div class="detail-spec-value vigor-text" id="detailTreeVigor">良い</div>
+                  <div class="detail-spec-value vigor-text" id="detailTreeVigor">-</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">樹高 (H)</div>
+                  <div class="detail-spec-value"><span id="detailTreeHeight">-</span> m</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">幹周 (C)</div>
+                  <div class="detail-spec-value"><span id="detailTreeCirc">-</span> cm</div>
+                </div>
+                <div class="detail-spec-item">
+                  <div class="detail-spec-label">枝張り (W)</div>
+                  <div class="detail-spec-value"><span id="detailTreeCrown">-</span> m</div>
                 </div>
                 <div class="detail-spec-item">
                   <div class="detail-spec-label">位置情報</div>
-                  <div class="detail-spec-value" style="font-size: 11px; font-weight: 500;" id="detailTreeLatLng">35.6865, 139.7090</div>
+                  <div class="detail-spec-value" style="font-size: 10px; font-weight: 500;" id="detailTreeLatLng">-</div>
                 </div>
               </div>
             </div>
@@ -843,14 +906,20 @@
               </div>
             </div>
 
-            <!-- Species -->
-            <div class="form-group">
-              <label class="form-label" for="inputSpecies">樹種名</label>
-              <input type="text" placeholder="例: ケヤキ、ソメイヨシノ" class="input-field" id="inputSpecies" required>
+            <!-- Tree Number & Species (Row) -->
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="inputTreeNum">樹木番号</label>
+                <input type="text" placeholder="例: TR-005" class="input-field" id="inputTreeNum" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputSpecies">樹種名</label>
+                <input type="text" placeholder="例: ケヤキ、ソメイヨシノ" class="input-field" id="inputSpecies" required>
+              </div>
             </div>
 
-            <!-- Height & Circumference (Row) -->
-            <div class="form-row-2">
+            <!-- Height, Circumference, Crown (3 Columns Row) -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
               <div class="form-group">
                 <label class="form-label" for="inputHeight">樹高 (m)</label>
                 <input type="number" step="0.1" placeholder="m" class="input-field" id="inputHeight" required>
@@ -859,17 +928,21 @@
                 <label class="form-label" for="inputCirc">幹周 (cm)</label>
                 <input type="number" placeholder="cm" class="input-field" id="inputCirc" required>
               </div>
+              <div class="form-group">
+                <label class="form-label" for="inputCrown">枝張り (m)</label>
+                <input type="number" step="0.1" placeholder="m" class="input-field" id="inputCrown" required>
+              </div>
             </div>
 
             <!-- Vigor Select -->
             <div class="form-group">
               <label class="form-label" for="selectVigor">樹勢（健全度）</label>
               <select class="input-field" id="selectVigor" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
-                <option value="1">1:良い</option>
-                <option value="2" selected>2:普通</option>
-                <option value="3">3:少し悪い</option>
-                <option value="4">4:悪い</option>
-                <option value="5">5:枯死</option>
+                <option value="1">良い</option>
+                <option value="2" selected>普通</option>
+                <option value="3">少し悪い</option>
+                <option value="4">悪い</option>
+                <option value="5">枯死</option>
               </select>
             </div>
 
@@ -877,10 +950,10 @@
             <div class="form-group">
               <label class="form-label" for="selectRisk">危険度ランク (街路樹点検マニュアル)</label>
               <select class="input-field" id="selectRisk" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
-                <option value="I" selected>I: 被害無〜小</option>
-                <option value="II">II: 被害中</option>
-                <option value="III">III: 倒伏危険性低</option>
-                <option value="IV">IV: 倒伏危険性高</option>
+                <option value="I" selected>I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
               </select>
             </div>
 
@@ -917,33 +990,39 @@
       trees: [
         {
           id: 'TR-001',
+          treeNum: '001-A',
           species: 'ケヤキ',
           lat: 35.6865,
           lng: 139.7090,
           height: 15.0,
           circ: 65,
+          crown: 8.0,
           vigor: 1, // 良い
           risk: 'I', // 被害無〜小
           photo: null
         },
         {
           id: 'TR-002',
+          treeNum: '002-B',
           species: 'ソメイヨシノ',
           lat: 35.6842,
           lng: 139.7112,
           height: 8.5,
           circ: 35,
+          crown: 5.0,
           vigor: 3, // 少し悪い
           risk: 'II', // 被害中
           photo: null
         },
         {
           id: 'TR-003',
+          treeNum: '003-C',
           species: 'イチョウ',
           lat: 35.6828,
           lng: 139.7080,
           height: 18.0,
           circ: 80,
+          crown: 6.5,
           vigor: 4, // 悪い
           risk: 'IV', // 倒伏危険性高
           photo: null
@@ -987,9 +1066,11 @@
     const photoPlaceholder = document.getElementById('photoPlaceholder');
     const inputLat = document.getElementById('inputLat');
     const inputLng = document.getElementById('inputLng');
+    const inputTreeNum = document.getElementById('inputTreeNum');
     const inputSpecies = document.getElementById('inputSpecies');
     const inputHeight = document.getElementById('inputHeight');
     const inputCirc = document.getElementById('inputCirc');
+    const inputCrown = document.getElementById('inputCrown');
     const selectVigor = document.getElementById('selectVigor');
     const selectRisk = document.getElementById('selectRisk');
 
@@ -998,9 +1079,11 @@
     const detailTreeFallbackGraphic = document.getElementById('detailTreeFallbackGraphic');
     const detailTreeName = document.getElementById('detailTreeName');
     const detailTreeId = document.getElementById('detailTreeId');
+    const detailTreeNum = document.getElementById('detailTreeNum');
     const detailRiskBadge = document.getElementById('detailRiskBadge');
     const detailTreeHeight = document.getElementById('detailTreeHeight');
     const detailTreeCirc = document.getElementById('detailTreeCirc');
+    const detailTreeCrown = document.getElementById('detailTreeCrown');
     const detailTreeVigor = document.getElementById('detailTreeVigor');
     const detailTreeLatLng = document.getElementById('detailTreeLatLng');
 
@@ -1058,6 +1141,46 @@
       });
     }
 
+    function createPopupContent(tree) {
+      const vigorText = vigorLabels[tree.vigor] || '-';
+      const treeNumText = tree.treeNum || '-';
+      const crownText = tree.crown ? `${tree.crown.toFixed(1)} m` : '-';
+      const heightText = tree.height ? `${tree.height.toFixed(1)} m` : '-';
+      const circText = tree.circ ? `${tree.circ} cm` : '-';
+      const latText = tree.lat.toFixed(5);
+      const lngText = tree.lng.toFixed(5);
+      
+      const riskBadgeClass = 'badge-' + tree.risk.toLowerCase();
+
+      return `
+        <div class="custom-popup-content">
+          <div class="popup-content-title">
+            <span>${tree.species}</span>
+            <span class="risk-badge ${riskBadgeClass}">RANK ${tree.risk}</span>
+          </div>
+          <div class="popup-content-grid">
+            <span class="popup-content-label">樹木番号</span>
+            <span class="popup-content-value">${treeNumText}</span>
+            
+            <span class="popup-content-label">樹高</span>
+            <span class="popup-content-value">${heightText}</span>
+            
+            <span class="popup-content-label">幹周</span>
+            <span class="popup-content-value">${circText}</span>
+            
+            <span class="popup-content-label">枝張り</span>
+            <span class="popup-content-value">${crownText}</span>
+            
+            <span class="popup-content-label">樹勢</span>
+            <span class="popup-content-value vigor-text vigor-${tree.vigor}">${vigorText}</span>
+            
+            <span class="popup-content-label">座標</span>
+            <span class="popup-content-value" style="font-size: 9px;">${latText}, ${lngText}</span>
+          </div>
+        </div>
+      `;
+    }
+
     function renderMarkers() {
       // Clear existing markers from map
       Object.keys(markers).forEach(id => {
@@ -1072,6 +1195,18 @@
         const marker = L.marker([tree.lat, tree.lng], { icon: icon }).addTo(map);
         
         markers[tree.id] = marker;
+
+        // Custom Leaflet Popup
+        const popupContent = createPopupContent(tree);
+        const popup = L.popup({
+          className: 'custom-leaflet-popup',
+          maxWidth: 280,
+          closeButton: true,
+          autoClose: false,
+          closeOnClick: null
+        }).setContent(popupContent);
+
+        marker.bindPopup(popup);
 
         // Custom marker click listener
         marker.on('click', () => {
@@ -1174,13 +1309,16 @@
       if (marker) {
         const el = marker.getElement();
         if (el) el.classList.add('active');
+        marker.openPopup(); // Open custom popup on map
       }
 
       // Populate details
       detailTreeId.innerText = tree.id;
       detailTreeName.innerText = tree.species;
-      detailTreeHeight.innerText = tree.height.toFixed(1);
-      detailTreeCirc.innerText = tree.circ;
+      detailTreeHeight.innerText = tree.height ? tree.height.toFixed(1) : '-';
+      detailTreeCirc.innerText = tree.circ || '-';
+      detailTreeCrown.innerText = tree.crown ? tree.crown.toFixed(1) : '-';
+      detailTreeNum.innerText = tree.treeNum || '-';
       detailTreeLatLng.innerText = `${tree.lat.toFixed(5)}, ${tree.lng.toFixed(5)}`;
       
       // Vigor class & label mapping
@@ -1249,11 +1387,13 @@
       // Create new Tree item
       const newTree = {
         id: nextIdStr,
+        treeNum: inputTreeNum.value.trim(),
         species: inputSpecies.value.trim(),
         lat: lat,
         lng: lng,
         height: parseFloat(inputHeight.value),
         circ: parseInt(inputCirc.value, 10),
+        crown: parseFloat(inputCrown.value),
         vigor: parseInt(selectVigor.value, 10),
         risk: selectRisk.value,
         photo: state.uploadedPhotoBase64
