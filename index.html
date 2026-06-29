@@ -407,7 +407,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputSpecies">樹種名</label>
-                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
+                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
                 </div>
               </div>
 
@@ -636,7 +636,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -671,7 +671,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">衰退要因</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecline" onchange="toggleDeclineTextInput(this, 'inputRootDeclineOther')">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecline" onchange="toggleDeclineTextInput(this, 'inputRootDeclineOther')">
                     <option value="無" selected>無</option>
                     <option value="外傷">外傷</option>
                     <option value="その他">その他（記載）</option>
@@ -772,7 +772,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
                     <option value="4.5m以上" selected>4.5m以上</option>
                     <option value="4.5m未満→枝・幹">4.5m未満→枝・幹</option>
                   </select>
@@ -796,7 +796,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">照明照射阻害</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
                     <option value="無" selected>無</option>
                     <option value="有→枝・幹">有→枝・幹</option>
                   </select>
@@ -1051,8 +1051,8 @@
         <!-- ==========================================
              VIEW 4: REGISTER SUCCESS SUMMARY (SPA 2-TAB)
              ========================================== -->
-        <div class="panel-view hidden flex flex-col gap-5" id="registerSuccessView">
-          <div class="flex flex-col items-center justify-center text-center p-4 bg-emerald-955/20 border border-emerald-500/30 rounded-xl gap-2">
+        <div class="panel-view hidden flex flex-col gap-5" id="summary-view">
+          <div class="flex flex-col items-center justify-center text-center p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl gap-2">
             <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-brand flex items-center justify-center text-brand">
               <i data-lucide="check-circle" class="w-5 h-5"></i>
             </div>
@@ -1069,7 +1069,7 @@
           <!-- Tab Content 1: Summary -->
           <div id="successTabContentSummary" class="space-y-4">
             <!-- Registered Info Card -->
-            <div class="bg-slate-955/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">基本データ</h3>
               <div class="grid grid-cols-2 gap-3 text-xs">
                 <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
@@ -1104,7 +1104,7 @@
             </div>
 
             <!-- Risk Status Card -->
-            <div class="bg-slate-955/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">総合危険度と推奨処置</h3>
               <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
                 <div>
@@ -1140,7 +1140,7 @@
 
           <!-- Tab Content 2: Photos & AI Diagnosis -->
           <div id="successTabContentPhotos" class="hidden space-y-4">
-            <div class="bg-slate-955/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録写真とAI判定結果</h3>
               <div class="flex flex-col gap-3" id="successPhotosGrid">
                 <!-- Dynamically populated photos and AI texts -->
@@ -1438,7 +1438,7 @@
     const detailAiImageGrid = document.getElementById('detailAiImageGrid');
 
     // Register Success Elements
-    const registerSuccessView = document.getElementById('registerSuccessView');
+    const summaryResultView = document.getElementById('summary-view');
     const successTreeNum = document.getElementById('successTreeNum');
     const successSpecies = document.getElementById('successSpecies');
     const successRiskLabel = document.getElementById('successRiskLabel');
@@ -1600,14 +1600,14 @@
       summaryView.classList.add('hidden');
       detailView.classList.add('hidden');
       registerView.classList.add('hidden');
-      registerSuccessView.classList.add('hidden');
+      summaryResultView.classList.add('hidden');
 
       Object.keys(markers).forEach(id => {
         const el = markers[id].getElement();
         if (el) el.classList.remove('active');
       });
 
-      if (newMode !== 'register' && newMode !== 'register_success' && state.tempMarker) {
+      if (newMode !== 'register' && newMode !== 'summary_result' && state.tempMarker) {
         map.removeLayer(state.tempMarker);
         state.tempMarker = null;
         state.selectedLatLng = null;
@@ -1628,8 +1628,8 @@
         formState = { aiResults: {}, overallPhoto: null };
         resetFormElements();
         showWizardStep(1);
-      } else if (newMode === 'register_success') {
-        registerSuccessView.classList.remove('hidden');
+      } else if (newMode === 'summary_result') {
+        summaryResultView.classList.remove('hidden');
       }
     }
 
@@ -1837,7 +1837,7 @@
 
       photos.forEach(item => {
         const card = document.createElement('div');
-        card.className = 'bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-lg';
+        card.className = 'bg-slate-955/40 border border-slate-800 rounded-xl overflow-hidden shadow-lg';
         card.innerHTML = `
           <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-300">${item.label}</div>
           <div class="h-44 bg-slate-950 flex items-center justify-center overflow-hidden">
@@ -2014,14 +2014,11 @@
       const spinner = container.querySelector('.animate-spin').parentNode;
       const resultBox = container.nextElementSibling;
       
-      // Preview local image
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.src = e.target.result;
-        preview.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-      };
-      reader.readAsDataURL(file);
+      // Preview local image using Object URL
+      const objectURL = URL.createObjectURL(file);
+      preview.src = objectURL;
+      preview.classList.remove('hidden');
+      placeholder.classList.add('hidden');
 
       // Trigger AI Analysis mock
       spinner.classList.remove('hidden');
@@ -2040,7 +2037,7 @@
 
         // Store result base64 and data in formState
         formState.aiResults[inputEl.id] = {
-          photo: preview.src,
+          photo: objectURL,
           name: selected.name,
           rate: rate
         };
@@ -2054,15 +2051,12 @@
       const file = e.target.files[0];
       if (!file) return;
 
-      // Preview Image
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        formState.overallPhoto = event.target.result;
-        document.getElementById('previewOverallPhoto').src = formState.overallPhoto;
-        document.getElementById('previewOverallPhoto').classList.remove('hidden');
-        document.getElementById('placeholderOverallPhoto').classList.add('hidden');
-      };
-      reader.readAsDataURL(file);
+      // Preview Image using Object URL
+      const objectURL = URL.createObjectURL(file);
+      formState.overallPhoto = objectURL;
+      document.getElementById('previewOverallPhoto').src = objectURL;
+      document.getElementById('previewOverallPhoto').classList.remove('hidden');
+      document.getElementById('placeholderOverallPhoto').classList.add('hidden');
 
       // Parse EXIF
       EXIF.getData(file, function() {
@@ -2250,7 +2244,20 @@
       state.trees.push(newTree);
       renderMarkers();
       
-      // Populate success view 1st tab details
+      showSummary();
+    });
+
+    /* ==========================================================================
+       Action & Display Control: showSummary()
+       ========================================================================== */
+    function showSummary() {
+      const newTree = state.trees[state.trees.length - 1];
+      if (!newTree) return;
+
+      // 1. Hide the wizard form container
+      registerView.classList.add('hidden');
+
+      // 2. Populate 1st tab details (basic specs, part severity ratings & recommendation notes)
       successTreeNum.innerText = newTree.treeNum || '-';
       successSpecies.innerText = newTree.species || '-';
       successLatLng.innerText = `${newTree.lat.toFixed(6)}, ${newTree.lng.toFixed(6)}`;
@@ -2295,7 +2302,7 @@
         successPartTreatmentTable.appendChild(row);
       });
 
-      // Populate success view 2nd tab photo grid with base64 / mock AI predictions
+      // Populate success view 2nd tab photo grid with local object URLs & mock AI predictions
       successPhotosGrid.innerHTML = '';
       const photosToRender = [
         { label: '全体（全景写真）', data: newTree.photo ? { photo: newTree.photo, name: 'GPS座標および撮影位置確認済', rate: 'GPS抽出' } : null },
@@ -2350,9 +2357,10 @@
       // Default to 1st tab
       switchSuccessTab('summary');
 
-      switchMode('register_success');
+      // Switch application mode to show result container
+      switchMode('summary_result');
       lucide.createIcons();
-    });
+    }
 
     /* ==========================================================================
        Setup Listeners & Initialization
@@ -2383,7 +2391,7 @@
       } else {
         successTabBtnSummary.className = 'flex-1 py-2 text-slate-400 hover:text-slate-200 border-b border-slate-800';
         successTabBtnPhotos.className = 'flex-1 py-2 text-brand border-b-2 border-brand';
-        successTabContentSummary.classList.add('hidden');
+        successTabContentSummary.add('hidden');
         successTabContentPhotos.classList.remove('hidden');
       }
     }
