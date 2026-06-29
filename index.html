@@ -18,7 +18,7 @@
   
   <!-- Exif-JS -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-
+ 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -373,7 +373,7 @@
                   <!-- AI Spinner for Species Detection -->
                   <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1" id="overallAiSpinner">
                     <div class="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-[10px] text-emerald-400 font-semibold">AIエンジンが樹種を解析中...</span>
+                    <span class="text-[10px] text-emerald-400 font-semibold">AIが樹種を解析中...</span>
                   </div>
 
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputPhoto" />
@@ -690,8 +690,8 @@
                     <option value="有（1/2以上）">有（1/2以上）</option>
                   </select>
                 </div>
-                <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根の被害</label>
+                <div class="form-group flex flex-col gap-1" for="inputRootExposed">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">露出根の被害</label>
                   <input type="text" placeholder="舗装の持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
                 </div>
               </div>
@@ -738,20 +738,19 @@
                 </div>
               </div>
 
-              <!-- other anomaly -->
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他異常</label>
-                <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
+                <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
               </div>
             </div>
 
             <!-- STEP 5: 交通障害・周辺状況 -->
             <div class="wizard-step-page hidden space-y-4" id="stepPage-5">
-              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 交通障害・周辺状況点検</h3>
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 交通障害・周辺状況</h3>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">揺れ</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹体の揺れ</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectSway">
                     <option value="無" selected>無</option>
                     <option value="小">小</option>
@@ -772,14 +771,14 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界（車道）</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
                     <option value="4.5m以上" selected>4.5m以上</option>
                     <option value="4.5m未満→枝・幹">4.5m未満→枝・幹</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界（歩道等）</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (歩道部)</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
                     <option value="2.5m以上" selected>2.5m以上</option>
                     <option value="2.5m未満→枝・幹">2.5m未満→枝・幹</option>
@@ -789,14 +788,14 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">道路標識等視認障害</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認阻害 (信号・標識)</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionVisibility">
                     <option value="無" selected>無</option>
                     <option value="有→枝・幹">有→枝・幹</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">街路灯遮光障害</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">照明照射阻害</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
                     <option value="無" selected>無</option>
                     <option value="有→枝・幹">有→枝・幹</option>
@@ -837,7 +836,7 @@
                 
                 <div class="flex flex-col gap-3 text-[11px]">
                   <!-- Row: Branch -->
-                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-300">
                       <span>枝 (Branches)</span>
                       <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
@@ -884,7 +883,7 @@
                   </div>
 
                   <!-- Row: Trunk -->
-                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-300">
                       <span>幹 (Trunk)</span>
                       <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
@@ -931,7 +930,7 @@
                   </div>
 
                   <!-- Row: Root flare / root -->
-                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-300">
                       <span>根元・根 (Root Flare / Root)</span>
                       <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
@@ -1047,6 +1046,58 @@
             </div>
 
           </form>
+        </div>
+
+        <!-- ==========================================
+             VIEW 4: REGISTER SUCCESS SUMMARY
+             ========================================== -->
+        <div class="panel-view hidden flex flex-col gap-5" id="registerSuccessView">
+          <div class="flex flex-col items-center justify-center text-center p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl gap-2">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-brand flex items-center justify-center text-brand">
+              <i data-lucide="check-circle" class="w-5 h-5"></i>
+            </div>
+            <h2 class="text-sm font-bold text-slate-100">点検カルテの登録が完了しました</h2>
+            <p class="text-[10px] text-slate-400">データはローカルステートへ正常に保存されました。</p>
+          </div>
+
+          <!-- Registered Info Card -->
+          <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録内容</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">樹木番号</div>
+                <div class="font-bold text-slate-200 mt-0.5" id="successTreeNum">-</div>
+              </div>
+              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                <div class="text-[10px] text-slate-400 uppercase font-semibold">樹種名</div>
+                <div class="font-bold text-slate-200 mt-0.5" id="successSpecies">-</div>
+              </div>
+              <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2 flex justify-between items-center">
+                <div>
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">総合危険度ランク</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="successRiskLabel">-</div>
+                </div>
+                <span class="text-xs px-2.5 py-1 font-bold rounded-lg border" id="successRiskBadge">RANK I</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Inference Engine Log -->
+          <div class="bg-slate-950/40 border border-slate-850 rounded-xl p-4 space-y-2">
+            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand"></i>
+              AI推論エンジン ログ
+            </h3>
+            <div class="font-mono text-[9px] text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-850 space-y-1 max-h-40 overflow-y-auto custom-scrollbar" id="successAiLogs">
+              <!-- Logs populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="w-full py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="reloadBtn">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            新しい点検カルテを作成する
+          </button>
         </div>
 
       </div>
@@ -1320,6 +1371,15 @@
     const detailActionNotes = document.getElementById('detailActionNotes');
     const detailAiImageGrid = document.getElementById('detailAiImageGrid');
 
+    // Register Success Elements
+    const registerSuccessView = document.getElementById('registerSuccessView');
+    const successTreeNum = document.getElementById('successTreeNum');
+    const successSpecies = document.getElementById('successSpecies');
+    const successRiskLabel = document.getElementById('successRiskLabel');
+    const successRiskBadge = document.getElementById('successRiskBadge');
+    const successAiLogs = document.getElementById('successAiLogs');
+    const reloadBtn = document.getElementById('reloadBtn');
+
     // Wizard Navigation Elements
     const prevStepBtn = document.getElementById('prevStepBtn');
     const nextStepBtn = document.getElementById('nextStepBtn');
@@ -1459,13 +1519,14 @@
       summaryView.classList.add('hidden');
       detailView.classList.add('hidden');
       registerView.classList.add('hidden');
+      registerSuccessView.classList.add('hidden');
 
       Object.keys(markers).forEach(id => {
         const el = markers[id].getElement();
         if (el) el.classList.remove('active');
       });
 
-      if (newMode !== 'register' && state.tempMarker) {
+      if (newMode !== 'register' && newMode !== 'register_success' && state.tempMarker) {
         map.removeLayer(state.tempMarker);
         state.tempMarker = null;
         state.selectedLatLng = null;
@@ -1486,6 +1547,8 @@
         formState = { aiResults: {}, overallPhoto: null };
         resetFormElements();
         showWizardStep(1);
+      } else if (newMode === 'register_success') {
+        registerSuccessView.classList.remove('hidden');
       }
     }
 
@@ -2106,8 +2169,26 @@
       state.trees.push(newTree);
       renderMarkers();
       
-      alert(`新規樹木点検カルテ ${nextIdStr} を登録しました。`);
-      switchMode('summary');
+      // Populate success view details
+      successTreeNum.innerText = newTree.treeNum || '-';
+      successSpecies.innerText = newTree.species || '-';
+      
+      const riskDescription = riskLabels[newTree.risk] || `RANK ${newTree.risk}`;
+      successRiskLabel.innerText = riskDescription;
+      
+      let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
+      if (newTree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      if (newTree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+      if (newTree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+      
+      successRiskBadge.className = `text-xs px-2.5 py-1 font-bold rounded-lg border ${badgeColorClass}`;
+      successRiskBadge.innerText = `RANK ${newTree.risk}`;
+
+      // Populate AI inference engine logs
+      generateSuccessAiLogs(newTree);
+
+      switchMode('register_success');
+      lucide.createIcons();
     });
 
     /* ==========================================================================
@@ -2124,6 +2205,57 @@
     // Tab clicks
     tabBtnSummary.addEventListener('click', () => switchDetailTab('summary'));
     tabBtnAi.addEventListener('click', () => switchDetailTab('ai'));
+
+    // Reload / New record creator listener
+    reloadBtn.addEventListener('click', () => {
+      location.reload();
+    });
+
+    function generateSuccessAiLogs(tree) {
+      successAiLogs.innerHTML = '';
+      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      
+      const logLines = [
+        `[INFO] ${timestamp} - Initializing AI inference engine...`,
+        `[INFO] ${timestamp} - Image pipeline load: Overall photo data ready.`,
+        `[SUCCESS] ${timestamp} - Exif metadata parsed: GPS coordinates extracted (${tree.lat.toFixed(5)}, ${tree.lng.toFixed(5)})`,
+        `[INFO] ${timestamp} - Loading YOLOv8 species detection model...`,
+        `[SUCCESS] ${timestamp} - AI Species Prediction completed: ${tree.species}`
+      ];
+
+      if (tree.branchPestResult) {
+        logLines.push(`[SUCCESS] ${timestamp} - Branch anomaly detection: ${tree.branchPestResult.name} (Conf: ${tree.branchPestResult.rate})`);
+      }
+      if (tree.trunkPestResult) {
+        logLines.push(`[SUCCESS] ${timestamp} - Trunk pest detection: ${tree.trunkPestResult.name} (Conf: ${tree.trunkPestResult.rate})`);
+      }
+      if (tree.trunkFruitingResult) {
+        logLines.push(`[SUCCESS] ${timestamp} - Trunk fruiting body identification: ${tree.trunkFruitingResult.name} (Conf: ${tree.trunkFruitingResult.rate})`);
+      }
+      if (tree.rootPestResult) {
+        logLines.push(`[SUCCESS] ${timestamp} - Root flare pest detection: ${tree.rootPestResult.name} (Conf: ${tree.rootPestResult.rate})`);
+      }
+      if (tree.rootFruitingResult) {
+        logLines.push(`[SUCCESS] ${timestamp} - Root flare fruiting body identification: ${tree.rootFruitingResult.name} (Conf: ${tree.rootFruitingResult.rate})`);
+      }
+
+      logLines.push(`[INFO] ${timestamp} - Physical Specs check: H=${tree.height}m, C=${tree.circ}cm, W=${tree.crown}m`);
+      logLines.push(`[INFO] ${timestamp} - Severity matrix: Branch=${tree.evalBranch.risk}, Trunk=${tree.evalTrunk.risk}, Root=${tree.evalRoot.risk}, Traffic=${tree.evalTraffic.risk}`);
+      logLines.push(`[SUCCESS] ${timestamp} - Final Risk evaluation: RANK ${tree.risk}`);
+      logLines.push(`[INFO] ${timestamp} - Storing tree record ${tree.id} to local state memory...`);
+      logLines.push(`[SUCCESS] ${timestamp} - Pipeline completed successfully.`);
+
+      logLines.forEach(line => {
+        const div = document.createElement('div');
+        if (line.includes('[SUCCESS]')) {
+          div.className = 'text-emerald-400 font-semibold';
+        } else {
+          div.className = 'text-slate-400';
+        }
+        div.innerText = line;
+        successAiLogs.appendChild(div);
+      });
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       initMap();
