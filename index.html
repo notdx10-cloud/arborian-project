@@ -140,11 +140,25 @@
       0% { transform: scale(0.8); opacity: 0.9; }
       100% { transform: scale(2.6); opacity: 0; }
     }
+
+    /* HTML, Body height definition */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Ensure Map container has size */
+    #map {
+      height: 100%;
+      width: 100%;
+      min-height: 300px;
+    }
   </style>
 </head>
 <body class="w-full h-full overflow-hidden bg-slate-950 text-slate-100 font-sans">
 
-  <div class="dashboard-container w-full h-full flex flex-col md:flex-row overflow-hidden relative">
+  <div class="dashboard-container w-full h-screen flex flex-col md:flex-row overflow-hidden relative">
     
     <!-- Left Sidebar: Form & Stats (Fixed Width 420px) -->
     <aside class="side-panel w-full md:w-[420px] h-1/2 md:h-full bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl relative overflow-hidden">
@@ -348,14 +362,27 @@
               
               <!-- Overall Photo Upload with Exif-JS -->
               <div class="form-group flex flex-col gap-1.5">
-                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全体写真のアップロード (GPS自動取得)</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全体写真のアップロード (GPS自動取得 & AI樹種判定)</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all" id="overallPhotoContainer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-1" id="placeholderOverallPhoto">
                     <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-500"></i>
                     <span class="text-[11px] font-semibold">画像を選択 (Exifから緯度経度を取得)</span>
                   </div>
                   <img src="" alt="Overall" class="hidden w-full h-full object-cover absolute top-0 left-0" id="previewOverallPhoto" />
+                  
+                  <!-- AI Spinner for Species Detection -->
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1" id="overallAiSpinner">
+                    <div class="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[10px] text-emerald-400 font-semibold">AIエンジンが樹種を解析中...</span>
+                  </div>
+
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputPhoto" />
+                </div>
+                
+                <!-- AI Species Result Box -->
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400" id="overallAiResultBox">
+                  <span class="font-semibold" id="overallAiResultLabel">AI判定: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded" id="overallAiResultRate">-</span>
                 </div>
               </div>
 
@@ -711,19 +738,20 @@
                 </div>
               </div>
 
+              <!-- other anomaly -->
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他異常</label>
-                <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
+                <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
               </div>
             </div>
 
             <!-- STEP 5: 交通障害・周辺状況 -->
             <div class="wizard-step-page hidden space-y-4" id="stepPage-5">
-              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 交通障害・周辺状況</h3>
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 交通障害・周辺状況点検</h3>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹体の揺れ</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">揺れ</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectSway">
                     <option value="無" selected>無</option>
                     <option value="小">小</option>
@@ -744,14 +772,14 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界（車道）</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
                     <option value="4.5m以上" selected>4.5m以上</option>
                     <option value="4.5m未満→枝・幹">4.5m未満→枝・幹</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (歩道部)</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界（歩道等）</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
                     <option value="2.5m以上" selected>2.5m以上</option>
                     <option value="2.5m未満→枝・幹">2.5m未満→枝・幹</option>
@@ -761,14 +789,14 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認阻害 (信号・標識)</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">道路標識等視認障害</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionVisibility">
                     <option value="無" selected>無</option>
                     <option value="有→枝・幹">有→枝・幹</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">照明照射阻害</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">街路灯遮光障害</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
                     <option value="無" selected>無</option>
                     <option value="有→枝・幹">有→枝・幹</option>
@@ -1334,6 +1362,11 @@
           state.tempMarker = L.marker(e.latlng, { icon: tempIcon }).addTo(map);
         }
       });
+
+      // Ensure Leaflet recalculates layout boundaries after rendering
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 250);
     }
 
     function createCustomMarkerIcon(riskClass) {
@@ -1796,10 +1829,16 @@
       document.getElementById('previewOverallPhoto').classList.add('hidden');
       document.getElementById('placeholderOverallPhoto').classList.remove('hidden');
 
+      // Reset overall photo AI results
+      document.getElementById('overallAiSpinner').classList.add('hidden');
+      document.getElementById('overallAiResultBox').classList.add('hidden');
+      document.getElementById('overallAiResultLabel').innerText = 'AI判定: -';
+      document.getElementById('overallAiResultRate').innerText = '-';
+
       // Clear all AI Result boxes
       document.querySelectorAll('#registerView .photo-upload-container').forEach(container => {
         const preview = container.querySelector('img');
-        if (preview && container.id !== 'placeholderOverallPhoto') {
+        if (preview && container.id !== 'placeholderOverallPhoto' && container.id !== 'overallPhotoContainer') {
           preview.src = '';
           preview.classList.add('hidden');
         }
@@ -1908,6 +1947,30 @@
           alert(`全体写真からGPS撮影位置を抽出しました！\n緯度: ${latitude.toFixed(6)}\n経度: ${longitude.toFixed(6)}`);
         }
       });
+
+      // AI Species Detection Mock
+      const aiSpinner = document.getElementById('overallAiSpinner');
+      const aiResultBox = document.getElementById('overallAiResultBox');
+      const aiResultLabel = document.getElementById('overallAiResultLabel');
+      const aiResultRate = document.getElementById('overallAiResultRate');
+      const inputSpecies = document.getElementById('inputSpecies');
+
+      aiSpinner.classList.remove('hidden');
+      aiResultBox.classList.add('hidden');
+
+      setTimeout(() => {
+        aiSpinner.classList.add('hidden');
+
+        const speciesList = ['ケヤキ', 'イチョウ', 'ソメイヨシノ', 'クスノキ', 'トウカエデ'];
+        const randomSpecies = speciesList[Math.floor(Math.random() * speciesList.length)];
+        
+        inputSpecies.value = randomSpecies;
+
+        const confidence = (Math.floor(Math.random() * 15) + 81) + '%'; // 81% - 95%
+        aiResultLabel.innerText = `AI判定: ${randomSpecies}の可能性`;
+        aiResultRate.innerText = `一致率 ${confidence}`;
+        aiResultBox.classList.remove('hidden');
+      }, 2000);
     });
 
     function convertDMSToDD(degrees, minutes, seconds, direction) {
