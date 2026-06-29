@@ -13,615 +13,83 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Exif-JS -->
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#10b981', // Emerald 500
+              hover: '#34d399',   // Emerald 400
+              glow: 'rgba(16, 185, 129, 0.25)',
+            },
+            risk: {
+              i: '#10b981',       // 緑
+              ii: '#f59e0b',      // 黄
+              iii: '#f97316',     // オレンジ
+              iv: '#ef4444',      // 赤
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    /* ==========================================================================
-       Design Tokens & CSS Variables
-       ========================================================================== */
-    :root {
-      --bg-panel: #1e293b; /* Slate 800 */
-      --bg-panel-dark: #0f172a; /* Slate 900 */
-      --bg-card: #334155; /* Slate 700 */
-      --bg-card-hover: #475569; /* Slate 600 */
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-focus: #4ade80;
-      
-      --text-white: #f8fafc;
-      --text-muted: #94a3b8;
-      
-      --accent-color: #4ade80; /* ネオングリーン */
-      --accent-glow: rgba(74, 222, 128, 0.25);
-      
-      --risk-i: #10b981; /* 緑 */
-      --risk-ii: #f59e0b; /* 黄 */
-      --risk-iii: #f97316; /* オレンジ */
-      --risk-iv: #ef4444; /* 赤 */
-      --color-temp: #3b82f6; /* 青 (仮ピン) */
-      
-      --font-sans: 'Inter', 'Noto Sans JP', sans-serif;
-      --transition-speed: 0.25s;
-    }
-
-    /* ==========================================================================
-       Reset & Base Layout
-       ========================================================================== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: var(--font-sans);
-      background-color: var(--bg-panel-dark);
-      color: var(--text-white);
-    }
-
-    .dashboard-container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    /* ==========================================================================
-       Left Side: Side Panel (350px width)
-       ========================================================================== */
-    .side-panel {
-      width: 350px;
-      height: 100%;
-      background-color: var(--bg-panel);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      z-index: 10;
-      box-shadow: 10px 0 25px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Panel Header */
-    .panel-header {
-      padding: 24px 20px;
-      background-color: var(--bg-panel-dark);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-box {
-      width: 32px;
-      height: 32px;
-      background: rgba(74, 222, 128, 0.15);
-      border: 2px solid var(--accent-color);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--accent-color);
-      font-size: 15px;
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    .logo-text-wrapper {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .logo-title {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .logo-subtitle {
-      font-size: 10px;
-      color: var(--accent-color);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-top: 1px;
-    }
-
-    /* Scrollable panel body */
-    .panel-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      position: relative;
-    }
-
-    /* Custom Scrollbar */
-    .panel-body::-webkit-scrollbar {
+    /* Custom Scrollbar for dark theme panels */
+    .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
     }
-    .panel-body::-webkit-scrollbar-track {
+    .custom-scrollbar::-webkit-scrollbar-track {
       background: transparent;
     }
-    .panel-body::-webkit-scrollbar-thumb {
+    .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 3px;
     }
-    .panel-body::-webkit-scrollbar-thumb:hover {
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.25);
     }
 
-    /* View container toggle states */
-    .panel-view {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      animation: fadeIn var(--transition-speed) ease-in-out;
-    }
-
-    .panel-view.hidden {
-      display: none;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ==========================================================================
-       Mode A: Summary Mode styles
-       ========================================================================== */
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
-    }
-
-    /* Stats summary card */
-    .stats-card {
-      background-color: var(--bg-panel-dark);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-white);
-    }
-
-    .stat-value.accent {
-      color: var(--accent-color);
-    }
-
-    /* Green Register trigger button */
-    .btn-create {
-      width: 100%;
-      background-color: var(--accent-color);
-      color: var(--bg-panel-dark);
-      border: none;
-      padding: 14px;
+    /* Custom Leaflet Popup Styling to match dark theme */
+    .custom-leaflet-popup .leaflet-popup-content-wrapper {
+      background-color: #0f172a; /* slate-900 */
+      color: #f8fafc; /* slate-50 */
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px var(--accent-glow);
-      transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+      padding: 6px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .custom-leaflet-popup .leaflet-popup-tip {
+      background-color: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .custom-leaflet-popup .leaflet-popup-close-button {
+      color: #94a3b8 !important; /* slate-400 */
+      padding: 8px 10px 0 0 !important;
+    }
+    .custom-leaflet-popup .leaflet-popup-close-button:hover {
+      color: #ffffff !important;
+      background: none !important;
+    }
+    .custom-leaflet-popup .leaflet-popup-content {
+      margin: 8px 12px !important;
+      line-height: 1.4;
     }
 
-    .btn-create:hover {
-      background-color: #34d399;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
-    }
-
-    .btn-create:active {
-      transform: translateY(0);
-    }
-
-    /* Tree items in list */
-    .tree-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .tree-item {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
-    }
-
-    .tree-item:hover {
-      transform: translateX(4px);
-      border-color: var(--border-focus);
-      background-color: var(--bg-card-hover);
-    }
-
-    .tree-item-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .tree-item-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-white);
-    }
-
-    .tree-item-id {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    /* Risk labels/badges */
-    .risk-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      text-transform: uppercase;
-    }
-
-    .badge-i { background-color: rgba(16, 185, 129, 0.15); color: var(--risk-i); border: 1px solid var(--risk-i); }
-    .badge-ii { background-color: rgba(245, 158, 11, 0.15); color: var(--risk-ii); border: 1px solid var(--risk-ii); }
-    .badge-iii { background-color: rgba(249, 115, 22, 0.15); color: var(--risk-iii); border: 1px solid var(--risk-iii); }
-    .badge-iv { background-color: rgba(239, 68, 68, 0.15); color: var(--risk-iv); border: 1px solid var(--risk-iv); }
-
-    /* ==========================================================================
-       Mode B: Tree Detail Mode styles
-       ========================================================================== */
-    .back-btn {
-      background: none;
-      border: 1px solid var(--border-color);
-      color: var(--text-white);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all var(--transition-speed);
-      align-self: flex-start;
-    }
-
-    .back-btn:hover {
-      background-color: var(--bg-card);
-      border-color: var(--border-focus);
-    }
-
-    .detail-card {
-      background-color: var(--bg-panel-dark);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .detail-photo-wrapper {
-      width: 100%;
-      height: 180px;
-      background-color: #1e293b;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .detail-photo-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Fallback dynamic tree graphics using inline CSS */
-    .fallback-tree-graphic {
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-color);
-    }
-
-    .detail-info-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .detail-row-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .detail-title-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .detail-tree-name {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .detail-tree-id {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .detail-divider {
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .detail-spec-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .detail-spec-item {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 10px 12px;
-    }
-
-    .detail-spec-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .detail-spec-value {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* Vigor labels */
-    .vigor-text {
-      font-weight: 700;
-    }
-    .vigor-1 { color: #10b981; }
-    .vigor-2 { color: #34d399; }
-    .vigor-3 { color: #fbbf24; }
-    .vigor-4 { color: #f97316; }
-    .vigor-5 { color: #ef4444; }
-
-    /* ==========================================================================
-       Mode C: New Registration Form styles
-       ========================================================================== */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Text/Number Inputs and Selects */
-    .input-field {
-      width: 100%;
-      height: 40px;
-      background-color: var(--bg-panel-dark);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0 12px;
-      color: var(--text-white);
-      font-family: var(--font-sans);
-      font-size: 13px;
-      transition: border-color var(--transition-speed);
-      outline: none;
-    }
-
-    .input-field:focus {
-      border-color: var(--border-focus);
-    }
-
-    .input-field::placeholder {
-      color: rgba(255, 255, 255, 0.25);
-    }
-
-    /* Double inline inputs */
-    .form-row-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    /* Location Input Group with click alert */
-    .location-notice {
-      font-size: 11px;
-      color: var(--accent-color);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-      margin-bottom: 2px;
-      animation: blink 1.5s infinite ease-in-out;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
-    .input-field.location {
-      background-color: rgba(15, 23, 42, 0.4);
-      color: var(--accent-color);
-      font-weight: 600;
-      border-style: dashed;
-    }
-
-    /* Photo Upload UI */
-    .photo-upload-container {
-      width: 100%;
-      height: 120px;
-      border: 2px dashed var(--border-color);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      background-color: var(--bg-panel-dark);
-      transition: border-color var(--transition-speed), background-color var(--transition-speed);
-    }
-
-    .photo-upload-container:hover {
-      border-color: var(--border-focus);
-      background-color: rgba(74, 222, 128, 0.02);
-    }
-
-    .photo-upload-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .photo-upload-preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .photo-upload-input {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    /* Form action buttons */
-    .form-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .btn-submit {
-      width: 100%;
-      background-color: var(--accent-color);
-      color: var(--bg-panel-dark);
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px var(--accent-glow);
-      transition: transform 0.2s, background-color 0.2s;
-    }
-
-    .btn-submit:hover {
-      background-color: #34d399;
-      transform: translateY(-1px);
-    }
-
-    /* ==========================================================================
-       Right Side: Map Container
-       ========================================================================== */
-    #map {
-      flex: 1;
-      height: 100%;
-      z-index: 1;
-    }
-
-    /* ==========================================================================
-       Leaflet Map Customizations (Dark Theme compatibility)
-       ========================================================================== */
-    .leaflet-control-zoom {
-      border: 1px solid var(--border-color) !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-    }
-    .leaflet-control-zoom a {
-      background-color: var(--bg-panel-dark) !important;
-      color: var(--text-white) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-    }
-    .leaflet-control-zoom a:hover {
-      background-color: var(--bg-card-hover) !important;
-    }
-    .leaflet-bar {
-      border-radius: 8px !important;
-      overflow: hidden;
-    }
-    .leaflet-attribution-container {
-      background: rgba(15, 23, 42, 0.8) !important;
-      color: var(--text-muted) !important;
-    }
-
-    /* Custom Leaflet Markers */
+    /* Map pulse animations */
     .custom-marker-wrapper {
       display: flex;
       align-items: center;
@@ -629,21 +97,20 @@
       width: 24px;
       height: 24px;
     }
-
     .marker-dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      border: 2px solid var(--bg-panel-dark);
+      border: 2px solid #0f172a;
       z-index: 2;
       box-shadow: 0 2px 4px rgba(0,0,0,0.5);
       transition: transform 0.2s ease;
     }
-    .marker-dot.risk-i { background-color: var(--risk-i); }
-    .marker-dot.risk-ii { background-color: var(--risk-ii); }
-    .marker-dot.risk-iii { background-color: var(--risk-iii); }
-    .marker-dot.risk-iv { background-color: var(--risk-iv); }
-    .marker-dot.temp { background-color: var(--color-temp); }
+    .marker-dot.risk-i { background-color: #10b981; }
+    .marker-dot.risk-ii { background-color: #f59e0b; }
+    .marker-dot.risk-iii { background-color: #f97316; }
+    .marker-dot.risk-iv { background-color: #ef4444; }
+    .marker-dot.temp { background-color: #3b82f6; }
 
     .marker-pulse {
       position: absolute;
@@ -662,7 +129,7 @@
 
     .custom-marker-wrapper.active .marker-dot {
       transform: scale(1.3);
-      border-color: var(--text-white);
+      border-color: #ffffff;
     }
 
     @keyframes markerPulse {
@@ -673,296 +140,884 @@
       0% { transform: scale(0.8); opacity: 0.9; }
       100% { transform: scale(2.6); opacity: 0; }
     }
-
-    /* ==========================================================================
-       Custom Leaflet Popup Styles (Dark Theme)
-       ========================================================================== */
-    .custom-leaflet-popup .leaflet-popup-content-wrapper {
-      background-color: var(--bg-panel-dark);
-      color: var(--text-white);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 6px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    }
-    .custom-leaflet-popup .leaflet-popup-tip {
-      background-color: var(--bg-panel-dark);
-      border: 1px solid var(--border-color);
-    }
-    .custom-leaflet-popup .leaflet-popup-close-button {
-      color: var(--text-muted) !important;
-      padding: 8px 10px 0 0 !important;
-    }
-    .custom-leaflet-popup .leaflet-popup-close-button:hover {
-      color: var(--text-white) !important;
-    }
-    .custom-leaflet-popup .leaflet-popup-content {
-      margin: 8px 12px !important;
-      line-height: 1.4;
-    }
-    .popup-content-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent-color);
-      margin-bottom: 6px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .popup-content-grid {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 4px 12px;
-      font-size: 11px;
-    }
-    .popup-content-label {
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .popup-content-value {
-      text-align: right;
-      font-weight: 700;
-    }
   </style>
 </head>
-<body>
+<body class="w-full h-full overflow-hidden bg-slate-950 text-slate-100 font-sans">
 
-  <div class="dashboard-container">
+  <div class="dashboard-container w-full h-full flex flex-col md:flex-row overflow-hidden relative">
     
-    <!-- Left Side: Side Panel -->
-    <aside class="side-panel" id="sidePanel">
+    <!-- Left Sidebar: Form & Stats (Fixed Width 420px) -->
+    <aside class="side-panel w-full md:w-[420px] h-1/2 md:h-full bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl relative overflow-hidden">
       
-      <!-- Top Branding header -->
-      <div class="panel-header">
-        <div class="logo-box">ai</div>
-        <div class="logo-text-wrapper">
-          <span class="logo-title">Pirates of Arborian</span>
-          <span class="logo-subtitle">樹木管理DXシステム</span>
+      <!-- Top Header -->
+      <div class="panel-header px-5 py-4 bg-slate-950 border-b border-slate-800 flex items-center gap-3">
+        <div class="logo-box w-8 h-8 bg-emerald-500/15 border-2 border-brand text-brand font-bold flex items-center justify-center rounded-lg text-sm shadow-[0_0_10px_var(--brand-glow)]">ai</div>
+        <div class="logo-text-wrapper flex flex-col">
+          <span class="logo-title text-sm font-bold tracking-tight text-slate-100 leading-tight">Pirates of Arborian</span>
+          <span class="logo-subtitle text-[10px] text-brand font-semibold tracking-wider uppercase leading-none mt-0.5">樹木管理DXシステム</span>
         </div>
       </div>
 
-      <!-- Main body containing switchable views -->
-      <div class="panel-body">
+      <!-- Scrollable Main Container -->
+      <div class="panel-body flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6" id="panelBody">
         
-        <!-- [A. Summary Mode] -->
-        <div class="panel-view" id="summaryView">
+        <!-- ==========================================
+             VIEW 1: SUMMARY MODE (DEFAULT)
+             ========================================== -->
+        <div class="panel-view flex flex-col gap-6" id="summaryView">
           <!-- Summary statistics -->
-          <div class="stats-card">
-            <h3 class="section-title">全体点検状況</h3>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <span class="stat-label">総管理樹木</span>
-                <span class="stat-value" id="statTotal">3</span>
+          <div class="stats-card bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">全体点検状況</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">総管理樹木</span>
+                <span class="text-2xl font-bold text-slate-100" id="statTotal">3</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-label">危険度III・IV</span>
-                <span class="stat-value" id="statDanger" style="color: var(--risk-iv)">1</span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">危険度III・IV</span>
+                <span class="text-2xl font-bold text-red-500" id="statDanger">1</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-label">要観察率</span>
-                <span class="stat-value accent" id="statAttentionRate">66%</span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">要観察率</span>
+                <span class="text-2xl font-bold text-emerald-400" id="statAttentionRate">66%</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-label">システム状態</span>
-                <span class="stat-value" style="font-size: 13px; color: var(--accent-color); display: flex; align-items: center; gap: 4px; margin-top: 6px;">
-                  <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-color); display: inline-block;"></span>
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[10px] text-slate-400 uppercase font-semibold">システム状態</span>
+                <span class="text-xs text-brand font-semibold flex items-center gap-1.5 mt-2">
+                  <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
                   接続良好
                 </span>
               </div>
             </div>
           </div>
 
-          <!-- Action trigger button -->
-          <button class="btn-create" id="triggerRegisterBtn">
-            <!-- Plus Icon -->
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+          <!-- Create Button -->
+          <button class="btn-create w-full py-3 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="triggerRegisterBtn">
+            <i data-lucide="plus" class="w-4 h-4"></i>
             新規点検カルテを作成
           </button>
 
-          <!-- List block -->
-          <div>
-            <h3 class="section-title">登録樹木カルテ一覧</h3>
-            <div class="tree-list" id="treeList">
-              <!-- Dynamically populated -->
+          <!-- List Section -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録樹木カルテ一覧</h3>
+            <div class="tree-list flex flex-col gap-2" id="treeList">
+              <!-- JS dynamically generates tree item cards here -->
             </div>
           </div>
         </div>
 
-        <!-- [B. Tree Detail Mode] -->
-        <div class="panel-view hidden" id="detailView">
-          <button class="back-btn" id="backToSummaryBtn">
-            <!-- Arrow left -->
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
+        <!-- ==========================================
+             VIEW 2: TREE DETAILS (TABBED)
+             ========================================== -->
+        <div class="panel-view hidden flex flex-col gap-5" id="detailView">
+          <button class="back-btn flex items-center gap-2 text-xs font-semibold px-3 py-2 border border-slate-700 hover:border-slate-500 rounded-lg transition-all" id="backToSummaryBtn">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
             一覧に戻る
           </button>
 
-          <div class="detail-card">
-            <!-- Photo/Placeholder area -->
-            <div class="detail-photo-wrapper">
-              <div class="fallback-tree-graphic" id="detailTreeFallbackGraphic">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 19V5"></path>
-                  <path d="M19 12a7 7 0 0 0-14 0c0 3.87 3.13 7 7 7"></path>
-                </svg>
+          <div class="flex flex-col gap-1">
+            <div class="flex items-start justify-between">
+              <div class="flex flex-col">
+                <h2 class="text-xl font-bold text-slate-100" id="detailTreeName">ケヤキ</h2>
+                <span class="text-xs text-slate-400 mt-0.5" id="detailTreeId">TR-001</span>
               </div>
-              <img src="" alt="Tree Photo" class="hidden" id="detailTreePhoto">
+              <span class="risk-badge text-xs px-2.5 py-1 font-bold rounded-lg border" id="detailRiskBadge">RANK I</span>
+            </div>
+          </div>
+
+          <!-- Details Tabs Header -->
+          <div class="flex border-b border-slate-800 text-xs font-semibold">
+            <button class="flex-1 py-2.5 text-brand border-b-2 border-brand" id="tabBtnSummary">カルテ詳細サマリー</button>
+            <button class="flex-1 py-2.5 text-slate-400 hover:text-slate-200" id="tabBtnAi">写真とAI判定履歴</button>
+          </div>
+
+          <!-- Tab Content 1: Summary -->
+          <div id="tabContentSummary" class="space-y-5">
+            <div class="bg-slate-950/40 border border-slate-800/60 rounded-xl overflow-hidden shadow-lg">
+              <div class="h-44 bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                <div class="text-slate-600 flex flex-col items-center gap-1.5" id="detailTreeFallbackGraphic">
+                  <i data-lucide="image" class="w-12 h-12 text-slate-700"></i>
+                  <span class="text-xs">写真未登録</span>
+                </div>
+                <img src="" alt="Tree" class="hidden w-full h-full object-cover" id="detailTreePhoto" />
+              </div>
+              
+              <!-- Specs Grid -->
+              <div class="p-4 grid grid-cols-2 gap-3 text-xs border-t border-slate-800/80">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹木番号</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeNum">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹勢健全度</div>
+                  <div class="font-bold mt-0.5" id="detailTreeVigor">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹形</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeShape">-</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹高 (H)</div>
+                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeHeight">-</span> m</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">幹周 (C)</div>
+                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeCirc">-</span> cm</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">枝張り (W)</div>
+                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeCrown">-</span> m</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2">
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold">位置情報 (緯度, 経度)</div>
+                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeLatLng">-</div>
+                </div>
+              </div>
             </div>
 
-            <!-- Content Area -->
-            <div class="detail-info-body">
-              <div class="detail-row-header">
-                <div class="detail-title-group">
-                  <span class="detail-tree-name" id="detailTreeName">ケヤキ</span>
-                  <span class="detail-tree-id" id="detailTreeId">TR-001</span>
-                </div>
-                <span class="risk-badge badge-i" id="detailRiskBadge">RANK I</span>
+            <!-- Anomalies Summary Tags -->
+            <div class="space-y-2">
+              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常診断状況</h4>
+              <div class="flex flex-wrap gap-1.5" id="detailAnomaliesTags">
+                <!-- tags populated dynamically -->
               </div>
+            </div>
 
-              <div class="detail-divider"></div>
-
-              <!-- Technical Specifications Grid -->
-              <div class="detail-spec-grid">
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">樹木番号</div>
-                  <div class="detail-spec-value" id="detailTreeNum">-</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">樹勢健全度</div>
-                  <div class="detail-spec-value vigor-text" id="detailTreeVigor">-</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">樹高 (H)</div>
-                  <div class="detail-spec-value"><span id="detailTreeHeight">-</span> m</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">幹周 (C)</div>
-                  <div class="detail-spec-value"><span id="detailTreeCirc">-</span> cm</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">枝張り (W)</div>
-                  <div class="detail-spec-value"><span id="detailTreeCrown">-</span> m</div>
-                </div>
-                <div class="detail-spec-item">
-                  <div class="detail-spec-label">位置情報</div>
-                  <div class="detail-spec-value" style="font-size: 10px; font-weight: 500;" id="detailTreeLatLng">-</div>
-                </div>
+            <!-- Treatment Details table -->
+            <div class="space-y-2">
+              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">部位別被害と処置</h4>
+              <div class="overflow-hidden border border-slate-800 rounded-lg text-[11px] bg-slate-950/40">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 font-semibold">
+                      <th class="p-2">部位</th>
+                      <th class="p-2">被害度</th>
+                      <th class="p-2">緊急性</th>
+                      <th class="p-2">推奨処置</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detailTreatmentTableBody">
+                    <!-- rows populated dynamically -->
+                  </tbody>
+                </table>
               </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-slate-950/30 border border-slate-800 p-3 rounded-lg text-xs space-y-1.5">
+              <div class="font-bold text-slate-400">処置の留意点・想定される影響等:</div>
+              <p class="text-slate-300 leading-relaxed whitespace-pre-wrap" id="detailActionNotes">-</p>
+            </div>
+          </div>
+
+          <!-- Tab Content 2: AI Diagnosis images & logs -->
+          <div id="tabContentAi" class="hidden space-y-4">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常箇所の写真とAI診断履歴</div>
+            <div class="flex flex-col gap-4" id="detailAiImageGrid">
+              <!-- AI images populated dynamically -->
             </div>
           </div>
         </div>
 
-        <!-- [C. New Registration Mode] -->
-        <div class="panel-view hidden" id="registerView">
-          <button class="back-btn" id="cancelRegisterBtn">
+        <!-- ==========================================
+             VIEW 3: WIZARD FORM (NEW TREE)
+             ========================================== -->
+        <div class="panel-view hidden flex flex-col gap-4" id="registerView">
+          <!-- Back button / Cancel -->
+          <button class="back-btn flex items-center gap-2 text-xs font-semibold px-3 py-2 border border-slate-700 hover:border-slate-500 rounded-lg transition-all" id="cancelRegisterBtn">
             キャンセル
           </button>
-          
-          <h2 class="logo-title" style="font-size: 18px;">点検カルテ新規登録</h2>
 
-          <!-- Form Area -->
-          <form id="registrationForm" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Step Indicator -->
+          <div class="w-full bg-slate-950 rounded-xl p-3 border border-slate-800">
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-brand" id="wizardStepTitle">STEP 1 / 6: 基本情報</span>
+              <span class="text-slate-400" id="wizardPercent">17%</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-brand rounded-full transition-all duration-300" id="wizardProgressBar" style="width: 17%"></div>
+            </div>
+          </div>
+
+          <!-- Wizard Form -->
+          <form id="wizardForm" onsubmit="return false;" class="space-y-4">
             
-            <!-- Photo Upload with Preview -->
-            <div class="form-group">
-              <label class="form-label">樹木写真の登録</label>
-              <div class="photo-upload-container">
-                <div class="photo-upload-placeholder" id="photoPlaceholder">
-                  <!-- Upload Icon -->
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                  </svg>
-                  <span>クリックして写真を選択</span>
+            <!-- STEP 1: 基本情報 -->
+            <div class="wizard-step-page space-y-4" id="stepPage-1">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 樹木の基本情報</h3>
+              
+              <!-- Overall Photo Upload with Exif-JS -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全体写真のアップロード (GPS自動取得)</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-1" id="placeholderOverallPhoto">
+                    <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-500"></i>
+                    <span class="text-[11px] font-semibold">画像を選択 (Exifから緯度経度を取得)</span>
+                  </div>
+                  <img src="" alt="Overall" class="hidden w-full h-full object-cover absolute top-0 left-0" id="previewOverallPhoto" />
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputPhoto" />
                 </div>
-                <img src="" alt="Preview" class="photo-upload-preview hidden" id="previewImg">
-                <input type="file" accept="image/*" class="photo-upload-input" id="inputPhoto">
+              </div>
+
+              <!-- Lat/Lng -->
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">位置情報 (緯度・経度)</label>
+                <div class="location-notice text-[10px] text-brand font-semibold animate-pulse flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-3 h-3"></i>
+                  画像アップロード、または地図をクリックして位置を取得
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-1">
+                  <input type="text" placeholder="緯度" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLat" readonly required />
+                  <input type="text" placeholder="経度" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLng" readonly required />
+                </div>
+              </div>
+
+              <!-- Tree Number & Species -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputTreeNum">樹木番号</label>
+                  <input type="text" placeholder="例: TR-004" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTreeNum" required />
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputSpecies">樹種名</label>
+                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
+                </div>
+              </div>
+
+              <!-- Physical Dimensions (Height, Circumference, Crown) -->
+              <div class="grid grid-cols-3 gap-2">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputHeight">樹高 (m)</label>
+                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputHeight" required />
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputCirc">幹周 (cm)</label>
+                  <input type="number" placeholder="cm" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCirc" required />
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputCrown">枝張り (m)</label>
+                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCrown" required />
+                </div>
+              </div>
+
+              <!-- Vigor & Shape select -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectVigor">樹勢（健全度）</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectVigor" required>
+                    <option value="1">1:良い</option>
+                    <option value="2" selected>2:普通</option>
+                    <option value="3">3:少し悪い</option>
+                    <option value="4">4:悪い</option>
+                    <option value="5">5:枯死</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectShape">樹形</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectShape" required>
+                    <option value="1">1:良い</option>
+                    <option value="2" selected>2:普通</option>
+                    <option value="3">3:少し悪い</option>
+                    <option value="4">4:悪い</option>
+                    <option value="5">5:枯死</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <!-- Click Map guidance notice & Position inputs -->
-            <div class="form-group">
-              <label class="form-label">位置情報 (緯度・経度)</label>
-              <div class="location-notice">
-                <!-- Location indicator symbol -->
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                地図をクリックして位置を取得してください
+            <!-- STEP 2: 枝の異常 -->
+            <div class="wizard-step-page hidden space-y-4" id="stepPage-2">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 枝の異常点検</h3>
+              
+              <!-- anomalous height position -->
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputBranchPos">異常発生位置 (m)</label>
+                <input type="number" step="0.1" placeholder="例: 4.5" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputBranchPos" />
               </div>
-              <div class="form-row-2">
-                <input type="text" placeholder="緯度" class="input-field location" id="inputLat" readonly required>
-                <input type="text" placeholder="経度" class="input-field location" id="inputLng" readonly required>
+
+              <!-- dead branches -->
+              <div class="grid grid-cols-3 gap-2">
+                <div class="form-group flex flex-col gap-1 col-span-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枯れ枝</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchDead">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1 col-span-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枝の異常</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchAnomaly">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1 col-span-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">大枝分岐部</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchJunction">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Branch Pest photo & AI mock -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-24 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
+                    <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
+                    <span class="text-[10px] font-semibold">カメラ起動 / 写真を選択</span>
+                  </div>
+                  <img src="" alt="Preview" class="hidden w-full h-full object-cover absolute top-0 left-0" />
+                  <!-- Spinner -->
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1">
+                    <div class="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[9px] text-emerald-400 font-semibold">AIが解析中...</span>
+                  </div>
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputBranchPestPhoto" onchange="handleAIUpload(this, 'branch')" />
+                </div>
+                <!-- AI Result Box -->
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                  <span class="font-semibold result-label">AI判定結果: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
+                </div>
               </div>
             </div>
 
-            <!-- Tree Number & Species (Row) -->
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="form-label" for="inputTreeNum">樹木番号</label>
-                <input type="text" placeholder="例: TR-005" class="input-field" id="inputTreeNum" required>
+            <!-- STEP 3: 幹の異常 -->
+            <div class="wizard-step-page hidden space-y-4" id="stepPage-3">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 幹の異常点検</h3>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkCavity">
+                    <option value="無" selected>無</option>
+                    <option value="有（芯未達）">有（芯未達）</option>
+                    <option value="有（芯達）">有（芯達）</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkDecay">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label" for="inputSpecies">樹種名</label>
-                <input type="text" placeholder="例: ケヤキ、ソメイヨシノ" class="input-field" id="inputSpecies" required>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPenetration">
+                    <option value="無" selected>無</option>
+                    <option value="有（芯未達）">有（芯未達）</option>
+                    <option value="有（芯達）">有（芯達）</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹皮の欠損</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkBarkLoss">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">打診音異常</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPercussion">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">衰退要因</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkDecline" onchange="toggleDeclineTextInput(this, 'inputTrunkDeclineOther')">
+                    <option value="無" selected>無</option>
+                    <option value="外傷">外傷</option>
+                    <option value="その他">その他（記載）</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- decline other text input (hidden by default) -->
+              <input type="text" placeholder="その他の要因を記入してください" class="hidden input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none mt-1" id="inputTrunkDeclineOther" />
+
+              <!-- Pest photo (AI) -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
+                    <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
+                    <span class="text-[10px] font-semibold">写真を選択</span>
+                  </div>
+                  <img src="" alt="Preview" class="hidden w-full h-full object-cover absolute top-0 left-0" />
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1">
+                    <div class="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[9px] text-emerald-400 font-semibold">AIが解析中...</span>
+                  </div>
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputTrunkPestPhoto" onchange="handleAIUpload(this, 'trunk')" />
+                </div>
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                  <span class="font-semibold result-label">AI判定結果: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
+                </div>
+              </div>
+
+              <!-- Fruiting body photo (AI) -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">子実体（きのこ等）の写真（AI診断対応）</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
+                    <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
+                    <span class="text-[10px] font-semibold">写真を選択</span>
+                  </div>
+                  <img src="" alt="Preview" class="hidden w-full h-full object-cover absolute top-0 left-0" />
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1">
+                    <div class="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[9px] text-emerald-400 font-semibold">AIが解析中...</span>
+                  </div>
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputTrunkFruitingPhoto" onchange="handleAIUpload(this, 'trunk')" />
+                </div>
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                  <span class="font-semibold result-label">AI判定結果: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
+                </div>
+              </div>
+
+              <!-- other anomaly -->
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaTrunkOther">その他異常</label>
+                <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaTrunkOther"></textarea>
               </div>
             </div>
 
-            <!-- Height, Circumference, Crown (3 Columns Row) -->
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-              <div class="form-group">
-                <label class="form-label" for="inputHeight">樹高 (m)</label>
-                <input type="number" step="0.1" placeholder="m" class="input-field" id="inputHeight" required>
+            <!-- STEP 4: 根元・根の異常 -->
+            <div class="wizard-step-page hidden space-y-4" id="stepPage-4">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 根元・根の異常点検</h3>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootCavity">
+                    <option value="無" selected>無</option>
+                    <option value="有（芯未達）">有（芯未達）</option>
+                    <option value="有（芯達）">有（芯達）</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label" for="inputCirc">幹周 (cm)</label>
-                <input type="number" placeholder="cm" class="input-field" id="inputCirc" required>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPenetration">
+                    <option value="無" selected>無</option>
+                    <option value="有（芯未達）">有（芯未達）</option>
+                    <option value="有（芯達）">有（芯達）</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹皮の欠損</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootBarkLoss">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label" for="inputCrown">枝張り (m)</label>
-                <input type="number" step="0.1" placeholder="m" class="input-field" id="inputCrown" required>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">打診音異常</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPercussion">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">衰退要因</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecline" onchange="toggleDeclineTextInput(this, 'inputRootDeclineOther')">
+                    <option value="無" selected>無</option>
+                    <option value="外傷">外傷</option>
+                    <option value="その他">その他（記載）</option>
+                  </select>
+                </div>
+              </div>
+
+              <input type="text" placeholder="その他の要因を記入してください" class="hidden input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none mt-1" id="inputRootDeclineOther" />
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">ガードリングルート</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootGirdling">
+                    <option value="無" selected>無</option>
+                    <option value="有（1/2未満）">有（1/2未満）</option>
+                    <option value="有（1/2以上）">有（1/2以上）</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根の被害</label>
+                  <input type="text" placeholder="舗装の持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
+                </div>
+              </div>
+
+              <!-- Pest photo (AI) -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
+                    <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
+                    <span class="text-[10px] font-semibold">写真を選択</span>
+                  </div>
+                  <img src="" alt="Preview" class="hidden w-full h-full object-cover absolute top-0 left-0" />
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1">
+                    <div class="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[9px] text-emerald-400 font-semibold">AIが解析中...</span>
+                  </div>
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputRootPestPhoto" onchange="handleAIUpload(this, 'root')" />
+                </div>
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                  <span class="font-semibold result-label">AI判定結果: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
+                </div>
+              </div>
+
+              <!-- Fruiting body photo (AI) -->
+              <div class="form-group flex flex-col gap-1.5">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">子実体（きのこ等）の写真（AI診断対応）</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                  <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
+                    <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
+                    <span class="text-[10px] font-semibold">写真を選択</span>
+                  </div>
+                  <img src="" alt="Preview" class="hidden w-full h-full object-cover absolute top-0 left-0" />
+                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1">
+                    <div class="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-[9px] text-emerald-400 font-semibold">AIが解析中...</span>
+                  </div>
+                  <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputRootFruitingPhoto" onchange="handleAIUpload(this, 'root')" />
+                </div>
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                  <span class="font-semibold result-label">AI判定結果: -</span>
+                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
+                </div>
+              </div>
+
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他異常</label>
+                <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
               </div>
             </div>
 
-            <!-- Vigor Select -->
-            <div class="form-group">
-              <label class="form-label" for="selectVigor">樹勢（健全度）</label>
-              <select class="input-field" id="selectVigor" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
-                <option value="1">良い</option>
-                <option value="2" selected>普通</option>
-                <option value="3">少し悪い</option>
-                <option value="4">悪い</option>
-                <option value="5">枯死</option>
-              </select>
+            <!-- STEP 5: 交通障害・周辺状況 -->
+            <div class="wizard-step-page hidden space-y-4" id="stepPage-5">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 交通障害・周辺状況</h3>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹体の揺れ</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectSway">
+                    <option value="無" selected>無</option>
+                    <option value="小">小</option>
+                    <option value="中">中</option>
+                    <option value="大">大</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">傾斜</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectLean">
+                    <option value="無" selected>無</option>
+                    <option value="小">小</option>
+                    <option value="中">中</option>
+                    <option value="大">大</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
+                    <option value="4.5m以上" selected>4.5m以上</option>
+                    <option value="4.5m未満→枝・幹">4.5m未満→枝・幹</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (歩道部)</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
+                    <option value="2.5m以上" selected>2.5m以上</option>
+                    <option value="2.5m未満→枝・幹">2.5m未満→枝・幹</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認阻害 (信号・標識)</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionVisibility">
+                    <option value="無" selected>無</option>
+                    <option value="有→枝・幹">有→枝・幹</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">照明照射阻害</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
+                    <option value="無" selected>無</option>
+                    <option value="有→枝・幹">有→枝・幹</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">風衝害の危険</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRiskWind">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+                <div class="form-group flex flex-col gap-1">
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">隣接樹木の被圧</label>
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRiskSuppression">
+                    <option value="無" selected>無</option>
+                    <option value="有">有</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputOtherSurroundings">その他周辺状況</label>
+                <input type="text" placeholder="周辺施設の近接状況など" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputOtherSurroundings" />
+              </div>
             </div>
 
-            <!-- Danger Select -->
-            <div class="form-group">
-              <label class="form-label" for="selectRisk">危険度ランク (街路樹点検マニュアル)</label>
-              <select class="input-field" id="selectRisk" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;">
-                <option value="I" selected>I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-              </select>
+            <!-- STEP 6: 被害状況・処置・登録 -->
+            <div class="wizard-step-page hidden space-y-4" id="stepPage-6">
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 被害総合判定・推奨処置</h3>
+
+              <!-- Table UI for Evaluation of each part -->
+              <div class="overflow-x-auto border border-slate-850 rounded-xl bg-slate-950/60 p-2.5 space-y-3">
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">部位別評価と判定</div>
+                
+                <div class="flex flex-col gap-3 text-[11px]">
+                  <!-- Row: Branch -->
+                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+                      <span>枝 (Branches)</span>
+                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">被害:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchDamage">
+                          <option value="無" selected>無</option>
+                          <option value="小">小</option>
+                          <option value="中">中</option>
+                          <option value="大">大</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">緊急:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchUrgency">
+                          <option value="無" selected>無</option>
+                          <option value="低">低</option>
+                          <option value="中">中</option>
+                          <option value="高">高</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">危険:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchRisk">
+                          <option value="I" selected>I</option>
+                          <option value="II">II</option>
+                          <option value="III">III</option>
+                          <option value="IV">IV</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">処置:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchAction">
+                          <option value="剪定">剪定</option>
+                          <option value="伐採">伐採</option>
+                          <option value="詳細診断">詳細診断</option>
+                          <option value="短期観察" selected>短期観察</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Row: Trunk -->
+                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+                      <span>幹 (Trunk)</span>
+                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">被害:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkDamage">
+                          <option value="無" selected>無</option>
+                          <option value="小">小</option>
+                          <option value="中">中</option>
+                          <option value="大">大</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">緊急:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkUrgency">
+                          <option value="無" selected>無</option>
+                          <option value="低">低</option>
+                          <option value="中">中</option>
+                          <option value="高">高</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">危険:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkRisk">
+                          <option value="I" selected>I</option>
+                          <option value="II">II</option>
+                          <option value="III">III</option>
+                          <option value="IV">IV</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">処置:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkAction">
+                          <option value="剪定">剪定</option>
+                          <option value="伐採">伐採</option>
+                          <option value="詳細診断">詳細診断</option>
+                          <option value="短期観察" selected>短期観察</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Row: Root flare / root -->
+                  <div class="border-b border-slate-850 pb-2.5 last:border-b-0 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+                      <span>根元・根 (Root Flare / Root)</span>
+                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">被害:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootDamage">
+                          <option value="無" selected>無</option>
+                          <option value="小">小</option>
+                          <option value="中">中</option>
+                          <option value="大">大</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">緊急:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootUrgency">
+                          <option value="無" selected>無</option>
+                          <option value="低">低</option>
+                          <option value="中">中</option>
+                          <option value="高">高</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">危険:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootRisk">
+                          <option value="I" selected>I</option>
+                          <option value="II">II</option>
+                          <option value="III">III</option>
+                          <option value="IV">IV</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">処置:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootAction">
+                          <option value="剪定">剪定</option>
+                          <option value="伐採">伐採</option>
+                          <option value="詳細診断">詳細診断</option>
+                          <option value="短期観察" selected>短期観察</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Row: Traffic -->
+                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
+                      <span>交通障害 (Traffic obstruction)</span>
+                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">被害:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficDamage">
+                          <option value="無" selected>無</option>
+                          <option value="小">小</option>
+                          <option value="中">中</option>
+                          <option value="大">大</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">緊急:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficUrgency">
+                          <option value="無" selected>無</option>
+                          <option value="低">低</option>
+                          <option value="中">中</option>
+                          <option value="高">高</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">危険:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficRisk">
+                          <option value="I" selected>I</option>
+                          <option value="II">II</option>
+                          <option value="III">III</option>
+                          <option value="IV">IV</option>
+                        </select>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-slate-400">処置:</span>
+                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficAction">
+                          <option value="剪定">剪定</option>
+                          <option value="伐採">伐採</option>
+                          <option value="詳細診断">詳細診断</option>
+                          <option value="短期観察" selected>短期観察</option>
+                          <option value="その他">その他</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notes area -->
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaActionNotes">処置の留意点・想定される影響等</label>
+                <textarea placeholder="倒伏防止用の支柱、剪定時の注意点など" class="w-full h-20 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaActionNotes"></textarea>
+              </div>
             </div>
 
-            <!-- Submit action -->
-            <div class="form-actions">
-              <button type="submit" class="btn-submit" id="submitBtn">
+            <!-- Wizard Navigation Buttons -->
+            <div class="flex items-center gap-3 pt-2">
+              <button type="button" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-750 text-slate-200 font-semibold rounded-xl text-xs transition-all active:scale-[0.98] hidden" id="prevStepBtn">
+                前のステップへ
+              </button>
+              <button type="button" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10" id="nextStepBtn">
+                次のステップへ
+              </button>
+              <button type="submit" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10 hidden" id="submitBtn">
                 点検カルテを登録
               </button>
             </div>
+
           </form>
         </div>
 
@@ -970,7 +1025,7 @@
     </aside>
 
     <!-- Right Side: Map Container -->
-    <main id="map"></main>
+    <main id="map" class="flex-1 h-1/2 md:h-full z-0"></main>
 
   </div>
 
@@ -998,8 +1053,49 @@
           circ: 65,
           crown: 8.0,
           vigor: 1, // 良い
-          risk: 'I', // 被害無〜小
-          photo: null
+          shape: 2, // 普通
+          photo: null,
+          branchPosition: 3.5,
+          branchDead: '無',
+          branchAnomaly: '無',
+          branchJunctionAnomaly: '無',
+          branchPestResult: null,
+          trunkCavity: '無',
+          trunkDecay: '無',
+          trunkPenetration: '無',
+          trunkBarkLoss: '無',
+          trunkPercussion: '無',
+          trunkDecline: '無',
+          trunkDeclineOther: '',
+          trunkPestResult: null,
+          trunkFruitingResult: null,
+          trunkOtherAnomaly: '',
+          rootCavity: '無',
+          rootDecay: '無',
+          rootPenetration: '無',
+          rootBarkLoss: '無',
+          rootPercussion: '無',
+          rootDecline: '無',
+          rootDeclineOther: '',
+          rootGirdling: '無',
+          rootExposed: '',
+          rootPestResult: null,
+          rootFruitingResult: null,
+          rootOtherAnomaly: '',
+          sway: '無',
+          lean: '無',
+          clearanceRoadway: '4.5m以上',
+          clearanceSidewalk: '2.5m以上',
+          obstructionVisibility: '無',
+          obstructionLight: '無',
+          riskWind: '無',
+          riskSuppression: '無',
+          otherSurroundings: '',
+          evalBranch: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalTrunk: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalRoot: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalTraffic: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          actionNotes: '定期点検の観察を継続します。'
         },
         {
           id: 'TR-002',
@@ -1011,8 +1107,49 @@
           circ: 35,
           crown: 5.0,
           vigor: 3, // 少し悪い
-          risk: 'II', // 被害中
-          photo: null
+          shape: 2, // 普通
+          photo: null,
+          branchPosition: 2.0,
+          branchDead: '有',
+          branchAnomaly: '無',
+          branchJunctionAnomaly: '有',
+          branchPestResult: { name: 'サビ病', rate: '88%', photo: 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23334155"/><text x="50" y="55" font-size="10" fill="%2394a3b8" text-anchor="middle">サンプル画像</text></svg>' },
+          trunkCavity: '有（芯未達）',
+          trunkDecay: '有',
+          trunkPenetration: '無',
+          trunkBarkLoss: '有',
+          trunkPercussion: '有',
+          trunkDecline: '無',
+          trunkDeclineOther: '',
+          trunkPestResult: null,
+          trunkFruitingResult: null,
+          trunkOtherAnomaly: '主幹にひび割れあり。',
+          rootCavity: '無',
+          rootDecay: '無',
+          rootPenetration: '無',
+          rootBarkLoss: '無',
+          rootPercussion: '無',
+          rootDecline: '無',
+          rootDeclineOther: '',
+          rootGirdling: '無',
+          rootExposed: '',
+          rootPestResult: null,
+          rootFruitingResult: null,
+          rootOtherAnomaly: '',
+          sway: '無',
+          lean: '小',
+          clearanceRoadway: '4.5m以上',
+          clearanceSidewalk: '2.5m未満→枝・幹',
+          obstructionVisibility: '無',
+          obstructionLight: '無',
+          riskWind: '無',
+          riskSuppression: '無',
+          otherSurroundings: '',
+          evalBranch: { damage: '小', urgency: '低', risk: 'II', action: '剪定' },
+          evalTrunk: { damage: '小', urgency: '低', risk: 'II', action: '短期観察' },
+          evalRoot: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalTraffic: { damage: '小', urgency: '低', risk: 'II', action: '剪定' },
+          actionNotes: '歩道側の飛び出し枝の剪定および主幹腐朽部の軽度の殺菌清掃。'
         },
         {
           id: 'TR-003',
@@ -1024,18 +1161,59 @@
           circ: 80,
           crown: 6.5,
           vigor: 4, // 悪い
-          risk: 'IV', // 倒伏危険性高
-          photo: null
+          shape: 4, // 悪い
+          photo: null,
+          branchPosition: 0.0,
+          branchDead: '無',
+          branchAnomaly: '無',
+          branchJunctionAnomaly: '無',
+          branchPestResult: null,
+          trunkCavity: '無',
+          trunkDecay: '無',
+          trunkPenetration: '無',
+          trunkBarkLoss: '無',
+          trunkPercussion: '無',
+          trunkDecline: '無',
+          trunkDeclineOther: '',
+          trunkPestResult: null,
+          trunkFruitingResult: null,
+          trunkOtherAnomaly: '',
+          rootCavity: '有（芯達）',
+          rootDecay: '有',
+          rootPenetration: '有（芯達）',
+          rootBarkLoss: '有',
+          rootPercussion: '有',
+          rootDecline: 'その他',
+          rootDeclineOther: '根系腐朽による支持力低下',
+          rootGirdling: '有（1/2以上）',
+          rootExposed: '舗装アスファルトの持ち上げ、露出根の破断。',
+          rootPestResult: null,
+          rootFruitingResult: { name: 'ベッコウタケ', rate: '93%', photo: 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23334155"/><text x="50" y="55" font-size="10" fill="%2394a3b8" text-anchor="middle">きのこ群生画像</text></svg>' },
+          rootOtherAnomaly: '根元付近に複数の子実体が群生している。',
+          sway: '大',
+          lean: '中',
+          clearanceRoadway: '4.5m未満→枝・幹',
+          clearanceSidewalk: '2.5m以上',
+          obstructionVisibility: '有→枝・幹',
+          obstructionLight: '有→枝・幹',
+          riskWind: '有',
+          riskSuppression: '有',
+          otherSurroundings: '隣接する電線との接触の恐れあり。',
+          evalBranch: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalTrunk: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          evalRoot: { damage: '大', urgency: '高', risk: 'IV', action: '伐採' },
+          evalTraffic: { damage: '中', urgency: '中', risk: 'III', action: '剪定' },
+          actionNotes: 'ベッコウタケの子実体が群生しており、空洞も芯達のため倒伏危険性が極めて高い。速やかな伐採を強く推奨。'
         }
       ]
     };
 
     const vigorLabels = {
-      1: '良い',
-      2: '普通',
-      3: '少し悪い',
-      4: '悪い',
-      5: '枯死'
+      1: '1:良い',
+      2: '2:普通',
+      3: '3:少し悪い',
+      4: '4:悪い',
+      5: '5:枯死'
     };
 
     const riskLabels = {
@@ -1044,6 +1222,37 @@
       'III': 'III: 倒伏危険性低',
       'IV': 'IV: 倒伏危険性高'
     };
+
+    const aiMockResults = {
+      branch: [
+        { name: 'サビ病', rate: '88%' },
+        { name: 'テングス病', rate: '92%' },
+        { name: 'ウドンコ病', rate: '85%' },
+        { name: 'アブラムシ被害', rate: '90%' }
+      ],
+      trunk: [
+        { name: 'カミキリムシ侵入孔', rate: '87%' },
+        { name: 'クビアカツヤカミキリ被害', rate: '95%' },
+        { name: 'ベッコウタケ (子実体)', rate: '91%' },
+        { name: 'コフキタケ (子実体)', rate: '89%' },
+        { name: '腐朽菌の繁殖', rate: '86%' }
+      ],
+      root: [
+        { name: 'ベッコウタケ (子実体)', rate: '93%' },
+        { name: 'コフキタケ (子実体)', rate: '90%' },
+        { name: '根腐れ病', rate: '85%' }
+      ]
+    };
+
+    // State for temporary form entry wizard
+    let wizardCurrentStep = 1;
+    let formState = {
+      aiResults: {}, // key is input id, value is { photo, name, rate }
+      overallPhoto: null
+    };
+
+    // Active detail view state
+    let activeDetailTab = 'summary'; // 'summary' or 'ai'
 
     /* ==========================================================================
        DOM Elements
@@ -1059,22 +1268,13 @@
     
     const treeListContainer = document.getElementById('treeList');
     
-    // Form elements
-    const registrationForm = document.getElementById('registrationForm');
-    const inputPhoto = document.getElementById('inputPhoto');
-    const previewImg = document.getElementById('previewImg');
-    const photoPlaceholder = document.getElementById('photoPlaceholder');
-    const inputLat = document.getElementById('inputLat');
-    const inputLng = document.getElementById('inputLng');
-    const inputTreeNum = document.getElementById('inputTreeNum');
-    const inputSpecies = document.getElementById('inputSpecies');
-    const inputHeight = document.getElementById('inputHeight');
-    const inputCirc = document.getElementById('inputCirc');
-    const inputCrown = document.getElementById('inputCrown');
-    const selectVigor = document.getElementById('selectVigor');
-    const selectRisk = document.getElementById('selectRisk');
+    // Tab Elements
+    const tabBtnSummary = document.getElementById('tabBtnSummary');
+    const tabBtnAi = document.getElementById('tabBtnAi');
+    const tabContentSummary = document.getElementById('tabContentSummary');
+    const tabContentAi = document.getElementById('tabContentAi');
 
-    // Details elements
+    // Details Elements
     const detailTreePhoto = document.getElementById('detailTreePhoto');
     const detailTreeFallbackGraphic = document.getElementById('detailTreeFallbackGraphic');
     const detailTreeName = document.getElementById('detailTreeName');
@@ -1085,7 +1285,19 @@
     const detailTreeCirc = document.getElementById('detailTreeCirc');
     const detailTreeCrown = document.getElementById('detailTreeCrown');
     const detailTreeVigor = document.getElementById('detailTreeVigor');
+    const detailTreeShape = document.getElementById('detailTreeShape');
     const detailTreeLatLng = document.getElementById('detailTreeLatLng');
+    const detailAnomaliesTags = document.getElementById('detailAnomaliesTags');
+    const detailTreatmentTableBody = document.getElementById('detailTreatmentTableBody');
+    const detailActionNotes = document.getElementById('detailActionNotes');
+    const detailAiImageGrid = document.getElementById('detailAiImageGrid');
+
+    // Wizard Navigation Elements
+    const prevStepBtn = document.getElementById('prevStepBtn');
+    const nextStepBtn = document.getElementById('nextStepBtn');
+    const wizardStepTitle = document.getElementById('wizardStepTitle');
+    const wizardPercent = document.getElementById('wizardPercent');
+    const wizardProgressBar = document.getElementById('wizardProgressBar');
 
     /* ==========================================================================
        Map & Leaflet Marker setups
@@ -1094,32 +1306,27 @@
     let markers = {};
 
     function initMap() {
-      // Shinjuku Gyoen focus
       map = L.map('map', {
         zoomControl: true,
         attributionControl: true
       }).setView([35.6850, 139.7100], 16);
 
-      // CartoDB Dark Matter tile layer
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
       }).addTo(map);
 
-      // Move zoom control
       map.zoomControl.setPosition('topright');
 
-      // Map click handler (for position fetching in register mode)
       map.on('click', (e) => {
         if (state.mode !== 'register') return;
         const { lat, lng } = e.latlng;
         state.selectedLatLng = e.latlng;
         
-        inputLat.value = lat.toFixed(6);
-        inputLng.value = lng.toFixed(6);
+        document.getElementById('inputLat').value = lat.toFixed(6);
+        document.getElementById('inputLng').value = lng.toFixed(6);
         
-        // Render or update temporary marker
         if (state.tempMarker) {
           state.tempMarker.setLatLng(e.latlng);
         } else {
@@ -1155,18 +1362,15 @@
       return `
         <div class="custom-popup-content">
           <div class="popup-content-title">
-            <span>${tree.species}</span>
+            <span class="font-bold">${tree.species}</span>
             <span class="risk-badge ${riskBadgeClass}">RANK ${tree.risk}</span>
           </div>
           <div class="popup-content-grid">
             <span class="popup-content-label">樹木番号</span>
             <span class="popup-content-value">${treeNumText}</span>
             
-            <span class="popup-content-label">樹高</span>
-            <span class="popup-content-value">${heightText}</span>
-            
-            <span class="popup-content-label">幹周</span>
-            <span class="popup-content-value">${circText}</span>
+            <span class="popup-content-label">樹高 / 幹周</span>
+            <span class="popup-content-value">${heightText} / ${circText}</span>
             
             <span class="popup-content-label">枝張り</span>
             <span class="popup-content-value">${crownText}</span>
@@ -1182,13 +1386,11 @@
     }
 
     function renderMarkers() {
-      // Clear existing markers from map
       Object.keys(markers).forEach(id => {
         map.removeLayer(markers[id]);
       });
       markers = {};
 
-      // Draw all markers from state
       state.trees.forEach(tree => {
         const riskClass = 'risk-' + tree.risk.toLowerCase();
         const icon = createCustomMarkerIcon(riskClass);
@@ -1196,7 +1398,6 @@
         
         markers[tree.id] = marker;
 
-        // Custom Leaflet Popup
         const popupContent = createPopupContent(tree);
         const popup = L.popup({
           className: 'custom-leaflet-popup',
@@ -1208,10 +1409,8 @@
 
         marker.bindPopup(popup);
 
-        // Custom marker click listener
         marker.on('click', () => {
           selectTree(tree.id);
-          // Pan map offset slightly to accommodate sidebar width
           const offsetLng = window.innerWidth > 768 ? -0.001 : 0;
           map.setView([tree.lat, tree.lng + offsetLng], 17, { animate: true, duration: 0.6 });
         });
@@ -1224,25 +1423,24 @@
     function switchMode(newMode) {
       state.mode = newMode;
       
-      // Hide all panels
       summaryView.classList.add('hidden');
       detailView.classList.add('hidden');
       registerView.classList.add('hidden');
 
-      // Map highlight resets
       Object.keys(markers).forEach(id => {
         const el = markers[id].getElement();
         if (el) el.classList.remove('active');
       });
 
-      // Temporary marker cleanup if exiting register mode
       if (newMode !== 'register' && state.tempMarker) {
         map.removeLayer(state.tempMarker);
         state.tempMarker = null;
         state.selectedLatLng = null;
       }
 
-      // Display selected panel & perform initialization
+      const panelBody = document.getElementById('panelBody');
+      panelBody.scrollTop = 0;
+
       if (newMode === 'summary') {
         summaryView.classList.remove('hidden');
         populateTreeList();
@@ -1251,7 +1449,10 @@
         detailView.classList.remove('hidden');
       } else if (newMode === 'register') {
         registerView.classList.remove('hidden');
-        resetForm();
+        wizardCurrentStep = 1;
+        formState = { aiResults: {}, overallPhoto: null };
+        resetFormElements();
+        showWizardStep(1);
       }
     }
 
@@ -1262,16 +1463,21 @@
       treeListContainer.innerHTML = '';
       state.trees.forEach(tree => {
         const item = document.createElement('div');
-        item.className = 'tree-item';
+        item.className = 'tree-item bg-slate-800 border border-slate-700/60 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:translate-x-1 hover:border-brand hover:bg-slate-700/40 transition-all';
         item.dataset.id = tree.id;
         
-        const riskClass = 'badge-' + tree.risk.toLowerCase();
+        // Define color scheme classes matching the risk rank
+        let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
+        if (tree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        if (tree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+        if (tree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+
         item.innerHTML = `
-          <div class="tree-item-left">
-            <span class="tree-item-name">${tree.species}</span>
-            <span class="tree-item-id">${tree.id}</span>
+          <div class="tree-item-left flex flex-col gap-0.5">
+            <span class="tree-item-name font-bold text-xs text-slate-100">${tree.species} (${tree.treeNum})</span>
+            <span class="tree-item-id text-[10px] text-slate-400 font-semibold">${tree.id} ・ ${tree.height.toFixed(1)}m</span>
           </div>
-          <span class="risk-badge ${riskClass}">RANK ${tree.risk}</span>
+          <span class="risk-badge text-[10px] font-bold px-2 py-0.5 rounded border ${badgeColorClass}">RANK ${tree.risk}</span>
         `;
 
         item.addEventListener('click', () => {
@@ -1295,7 +1501,7 @@
     }
 
     /* ==========================================================================
-       Detail Mode: Fill fields & Render
+       Detail Mode: Fill fields, Tab switching & Render
        ========================================================================== */
     function selectTree(treeId) {
       state.selectedTreeId = treeId;
@@ -1304,29 +1510,32 @@
 
       switchMode('detail');
 
-      // Highlight active marker on map
       const marker = markers[treeId];
       if (marker) {
         const el = marker.getElement();
         if (el) el.classList.add('active');
-        marker.openPopup(); // Open custom popup on map
+        marker.openPopup();
       }
 
       // Populate details
       detailTreeId.innerText = tree.id;
-      detailTreeName.innerText = tree.species;
+      detailTreeName.innerText = `${tree.species}`;
       detailTreeHeight.innerText = tree.height ? tree.height.toFixed(1) : '-';
       detailTreeCirc.innerText = tree.circ || '-';
       detailTreeCrown.innerText = tree.crown ? tree.crown.toFixed(1) : '-';
       detailTreeNum.innerText = tree.treeNum || '-';
-      detailTreeLatLng.innerText = `${tree.lat.toFixed(5)}, ${tree.lng.toFixed(5)}`;
+      detailTreeLatLng.innerText = `${tree.lat.toFixed(6)}, ${tree.lng.toFixed(6)}`;
       
-      // Vigor class & label mapping
-      detailTreeVigor.innerText = vigorLabels[tree.vigor];
-      detailTreeVigor.className = 'detail-spec-value vigor-text vigor-' + tree.vigor;
+      detailTreeVigor.innerText = vigorLabels[tree.vigor] || '-';
+      detailTreeVigor.className = 'font-bold mt-0.5 vigor-text vigor-' + tree.vigor;
+      detailTreeShape.innerText = vigorLabels[tree.shape] || '-';
 
       // Risk class mapping
-      detailRiskBadge.className = 'risk-badge badge-' + tree.risk.toLowerCase();
+      let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
+      if (tree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      if (tree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+      if (tree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
+      detailRiskBadge.className = `risk-badge text-xs px-2.5 py-1 font-bold rounded-lg border ${badgeColorClass}`;
       detailRiskBadge.innerText = 'RANK ' + tree.risk;
 
       // Photo rendering (Fallback check)
@@ -1338,87 +1547,526 @@
         detailTreePhoto.classList.add('hidden');
         detailTreeFallbackGraphic.classList.remove('hidden');
       }
+
+      // Render tags for active anomalies
+      renderAnomaliesTags(tree);
+
+      // Render treatment table
+      renderTreatmentTable(tree);
+
+      // Notes
+      detailActionNotes.innerText = tree.actionNotes || '特記事項なし。';
+
+      // Render AI photos and diagnosis history
+      renderAiTabContent(tree);
+
+      // Switch to default Summary Tab
+      switchDetailTab('summary');
     }
 
-    /* ==========================================================================
-       Register Mode: Photo Upload & Submit Card logic
-       ========================================================================== */
-    function resetForm() {
-      registrationForm.reset();
-      previewImg.src = '';
-      previewImg.classList.add('hidden');
-      photoPlaceholder.classList.remove('hidden');
-      state.uploadedPhotoBase64 = null;
-      inputLat.value = '';
-      inputLng.value = '';
-    }
-
-    // Photo input change (Base64 file reader preview)
-    inputPhoto.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          state.uploadedPhotoBase64 = event.target.result;
-          previewImg.src = state.uploadedPhotoBase64;
-          previewImg.classList.remove('hidden');
-          photoPlaceholder.classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Form submission
-    registrationForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const lat = parseFloat(inputLat.value);
-      const lng = parseFloat(inputLng.value);
+    function renderAnomaliesTags(tree) {
+      detailAnomaliesTags.innerHTML = '';
       
-      if (isNaN(lat) || isNaN(lng)) {
-        alert('地図をクリックして、位置情報（緯度・経度）を取得してください。');
+      const tags = [];
+      
+      // Branch anomalies
+      if (tree.branchDead === '有') tags.push({ label: '枝: 枯死・ぶら下がり枝', type: 'warning' });
+      if (tree.branchAnomaly === '有') tags.push({ label: '枝: 樹皮/木質部異常', type: 'warning' });
+      if (tree.branchJunctionAnomaly === '有') tags.push({ label: '枝: 分岐部異常', type: 'warning' });
+      
+      // Trunk anomalies
+      if (tree.trunkCavity !== '無') tags.push({ label: `幹: 空洞 ${tree.trunkCavity}`, type: 'danger' });
+      if (tree.trunkDecay === '有') tags.push({ label: '幹: 腐朽有', type: 'danger' });
+      if (tree.trunkPenetration !== '無') tags.push({ label: `幹: 鋼棒貫入 ${tree.trunkPenetration}`, type: 'danger' });
+      if (tree.trunkBarkLoss === '有') tags.push({ label: '幹: 樹皮欠損', type: 'warning' });
+      if (tree.trunkPercussion === '有') tags.push({ label: '幹: 打診音異常', type: 'warning' });
+      
+      // Root anomalies
+      if (tree.rootCavity !== '無') tags.push({ label: `根: 空洞 ${tree.rootCavity}`, type: 'danger' });
+      if (tree.rootDecay === '有') tags.push({ label: '根: 腐朽有', type: 'danger' });
+      if (tree.rootGirdling !== '無') tags.push({ label: `根: ガードリングルート ${tree.rootGirdling}`, type: 'warning' });
+      if (tree.rootExposed) tags.push({ label: '根: 露出根被害あり', type: 'warning' });
+
+      // Traffic
+      if (tree.sway !== '無') tags.push({ label: `揺れ: ${tree.sway}`, type: 'warning' });
+      if (tree.lean !== '無') tags.push({ label: `傾斜: ${tree.lean}`, type: 'warning' });
+
+      if (tags.length === 0) {
+        detailAnomaliesTags.innerHTML = '<span class="text-xs text-slate-400 bg-slate-800/40 px-2 py-1 rounded-md border border-slate-700/60 font-semibold">特記すべき異常はありません</span>';
+      } else {
+        tags.forEach(tag => {
+          const tagEl = document.createElement('span');
+          const colorClass = tag.type === 'danger' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+          tagEl.className = `text-[10px] font-bold px-2 py-0.5 border rounded-lg ${colorClass}`;
+          tagEl.innerText = tag.label;
+          detailAnomaliesTags.appendChild(tagEl);
+        });
+      }
+    }
+
+    function renderTreatmentTable(tree) {
+      detailTreatmentTableBody.innerHTML = '';
+      
+      const parts = [
+        { name: '枝', eval: tree.evalBranch },
+        { name: '幹', eval: tree.evalTrunk },
+        { name: '根元・根', eval: tree.evalRoot },
+        { name: '交通障害', eval: tree.evalTraffic }
+      ];
+
+      parts.forEach(part => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-slate-850 hover:bg-slate-900/40 transition-colors';
+        
+        let riskColorClass = 'text-brand bg-brand/10 border-brand/20';
+        if (part.eval.risk === 'II') riskColorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+        if (part.eval.risk === 'III') riskColorClass = 'text-orange-400 bg-orange-500/10 border-orange-500/20';
+        if (part.eval.risk === 'IV') riskColorClass = 'text-red-400 bg-red-500/10 border-red-500/20';
+
+        row.innerHTML = `
+          <td class="p-2 font-bold text-slate-300">${part.name}</td>
+          <td class="p-2 text-slate-300">${part.eval.damage || '無'}</td>
+          <td class="p-2 text-slate-300">${part.eval.urgency || '無'}</td>
+          <td class="p-2">
+            <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold ${riskColorClass} mr-1.5">${part.eval.risk}</span>
+            <span class="text-slate-200 font-medium">${part.eval.action || 'なし'}</span>
+          </td>
+        `;
+        detailTreatmentTableBody.appendChild(row);
+      });
+    }
+
+    function renderAiTabContent(tree) {
+      detailAiImageGrid.innerHTML = '';
+
+      const photos = [
+        { label: '枝の病害虫写真', data: tree.branchPestResult },
+        { label: '幹の病害虫写真', data: tree.trunkPestResult },
+        { label: '幹の子実体写真', data: tree.trunkFruitingResult },
+        { label: '根元の病害虫写真', data: tree.rootPestResult },
+        { label: '根元の子実体写真', data: tree.rootFruitingResult }
+      ].filter(item => item.data && item.data.photo);
+
+      if (photos.length === 0) {
+        detailAiImageGrid.innerHTML = `
+          <div class="flex flex-col items-center justify-center p-8 bg-slate-950/40 border border-slate-800 rounded-xl text-xs text-slate-500 gap-2">
+            <i data-lucide="image-off" class="w-8 h-8 text-slate-700"></i>
+            <span>アップロードされた異常箇所の写真はありません</span>
+          </div>
+        `;
+        lucide.createIcons();
         return;
       }
 
-      // Generate ID
+      photos.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-lg';
+        card.innerHTML = `
+          <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-300">${item.label}</div>
+          <div class="h-44 bg-slate-950 flex items-center justify-center overflow-hidden">
+            <img src="${item.data.photo}" alt="AI" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-3 bg-emerald-950/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
+            <div class="flex items-center gap-1.5 font-semibold">
+              <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+              <span>AI判定: ${item.data.name}の可能性</span>
+            </div>
+            <span class="font-bold text-[10px] bg-brand/20 px-1.5 py-0.5 rounded">一致率 ${item.data.rate}</span>
+          </div>
+        `;
+        detailAiImageGrid.appendChild(card);
+      });
+      
+      lucide.createIcons();
+    }
+
+    function switchDetailTab(tabName) {
+      activeDetailTab = tabName;
+      
+      if (tabName === 'summary') {
+        tabBtnSummary.className = 'flex-1 py-2.5 text-brand border-b-2 border-brand';
+        tabBtnAi.className = 'flex-1 py-2.5 text-slate-400 hover:text-slate-200 border-b border-slate-800';
+        tabContentSummary.classList.remove('hidden');
+        tabContentAi.classList.add('hidden');
+      } else {
+        tabBtnSummary.className = 'flex-1 py-2.5 text-slate-400 hover:text-slate-200 border-b border-slate-800';
+        tabBtnAi.className = 'flex-1 py-2.5 text-brand border-b-2 border-brand';
+        tabContentSummary.classList.add('hidden');
+        tabContentAi.classList.remove('hidden');
+      }
+    }
+
+    /* ==========================================================================
+       Wizard Form Navigation & Dynamic control
+       ========================================================================== */
+    function showWizardStep(step) {
+      wizardCurrentStep = step;
+      
+      // Hide all step pages
+      document.querySelectorAll('.wizard-step-page').forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      // Show current step page
+      document.getElementById(`stepPage-${step}`).classList.remove('hidden');
+
+      // Update titles and progress bar
+      const steps = [
+        '基本情報',
+        '枝の異常',
+        '幹の異常',
+        '根元・根の異常',
+        '交通障害・周辺状況',
+        '被害状況・処置・登録'
+      ];
+      wizardStepTitle.innerText = `STEP ${step} / 6: ${steps[step-1]}`;
+      
+      const percentage = Math.round((step / 6) * 100);
+      wizardPercent.innerText = `${percentage}%`;
+      wizardProgressBar.style.width = `${percentage}%`;
+
+      // Show/hide navigation buttons
+      if (step === 1) {
+        prevStepBtn.classList.add('hidden');
+        nextStepBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      } else if (step === 6) {
+        prevStepBtn.classList.remove('hidden');
+        nextStepBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+      } else {
+        prevStepBtn.classList.remove('hidden');
+        nextStepBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+
+      // Scroll form to top
+      document.getElementById('panelBody').scrollTop = 0;
+    }
+
+    function handleWizardNext() {
+      // Basic validation for Step 1 before proceeding
+      if (wizardCurrentStep === 1) {
+        const treeNum = document.getElementById('inputTreeNum').value.trim();
+        const species = document.getElementById('inputSpecies').value.trim();
+        const height = document.getElementById('inputHeight').value;
+        const circ = document.getElementById('inputCirc').value;
+        const crown = document.getElementById('inputCrown').value;
+        const lat = document.getElementById('inputLat').value;
+        const lng = document.getElementById('inputLng').value;
+
+        if (!lat || !lng) {
+          alert('全体写真をアップロードしてGPS情報を取得するか、地図上をクリックして緯度・経度を設定してください。');
+          return;
+        }
+        if (!treeNum || !species || !height || !circ || !crown) {
+          alert('基本情報（樹木番号、樹種名、寸法情報）をすべて入力してください。');
+          return;
+        }
+      }
+
+      if (wizardCurrentStep < 6) {
+        showWizardStep(wizardCurrentStep + 1);
+      }
+    }
+
+    function handleWizardPrev() {
+      if (wizardCurrentStep > 1) {
+        showWizardStep(wizardCurrentStep - 1);
+      }
+    }
+
+    function toggleDeclineTextInput(selectEl, textInputId) {
+      const otherInput = document.getElementById(textInputId);
+      if (selectEl.value === 'その他') {
+        otherInput.classList.remove('hidden');
+        otherInput.required = true;
+      } else {
+        otherInput.classList.add('hidden');
+        otherInput.required = false;
+        otherInput.value = '';
+      }
+    }
+
+    function resetFormElements() {
+      document.getElementById('wizardForm').reset();
+      
+      // Reset images previews
+      document.getElementById('previewOverallPhoto').src = '';
+      document.getElementById('previewOverallPhoto').classList.add('hidden');
+      document.getElementById('placeholderOverallPhoto').classList.remove('hidden');
+
+      // Clear all AI Result boxes
+      document.querySelectorAll('#registerView .photo-upload-container').forEach(container => {
+        const preview = container.querySelector('img');
+        if (preview && container.id !== 'placeholderOverallPhoto') {
+          preview.src = '';
+          preview.classList.add('hidden');
+        }
+        const placeholder = container.querySelector('.placeholder-info');
+        if (placeholder) placeholder.classList.remove('hidden');
+        const spinner = container.querySelector('.animate-spin');
+        if (spinner) spinner.parentNode.classList.add('hidden');
+      });
+
+      document.querySelectorAll('#registerView div[class*="bg-emerald-950/20"]').forEach(box => {
+        box.classList.add('hidden');
+      });
+
+      // Hide other decline text inputs
+      document.getElementById('inputTrunkDeclineOther').classList.add('hidden');
+      document.getElementById('inputRootDeclineOther').classList.add('hidden');
+    }
+
+    /* ==========================================================================
+       AI Upload Simulation Helper
+       ========================================================================== */
+    function handleAIUpload(inputEl, type) {
+      const file = inputEl.files[0];
+      if (!file) return;
+
+      const container = inputEl.closest('.photo-upload-container');
+      const placeholder = container.querySelector('.placeholder-info');
+      const preview = container.querySelector('img');
+      const spinner = container.querySelector('.animate-spin').parentNode;
+      const resultBox = container.nextElementSibling;
+      
+      // Preview local image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+
+      // Trigger AI Analysis mock
+      spinner.classList.remove('hidden');
+
+      setTimeout(() => {
+        spinner.classList.add('hidden');
+
+        // Randomly pick a disease/pest
+        const options = aiMockResults[type] || [{ name: '異常検出', rate: '85%' }];
+        const selected = options[Math.floor(Math.random() * options.length)];
+        const rate = (Math.floor(Math.random() * 15) + 81) + '%'; // 81% - 95%
+
+        resultBox.querySelector('.result-label').innerText = `AI判定結果: ${selected.name}の可能性`;
+        resultBox.querySelector('.result-rate').innerText = `一致率 ${rate}`;
+        resultBox.classList.remove('hidden');
+
+        // Store result base64 and data in formState
+        formState.aiResults[inputEl.id] = {
+          photo: preview.src,
+          name: selected.name,
+          rate: rate
+        };
+      }, 2000);
+    }
+
+    /* ==========================================================================
+       Overall Photo Exif GPS Extraction
+       ========================================================================== */
+    document.getElementById('inputPhoto').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Preview Image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        formState.overallPhoto = event.target.result;
+        document.getElementById('previewOverallPhoto').src = formState.overallPhoto;
+        document.getElementById('previewOverallPhoto').classList.remove('hidden');
+        document.getElementById('placeholderOverallPhoto').classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+
+      // Parse EXIF
+      EXIF.getData(file, function() {
+        const lat = EXIF.getTag(this, "GPSLatitude");
+        const lon = EXIF.getTag(this, "GPSLongitude");
+        const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
+        const lonRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
+        
+        if (lat && lon) {
+          const latitude = convertDMSToDD(lat[0], lat[1], lat[2], latRef);
+          const longitude = convertDMSToDD(lon[0], lon[1], lon[2], lonRef);
+          
+          document.getElementById('inputLat').value = latitude.toFixed(6);
+          document.getElementById('inputLng').value = longitude.toFixed(6);
+          
+          const latlng = L.latLng(latitude, longitude);
+          map.setView(latlng, 17);
+          
+          if (state.tempMarker) {
+            state.tempMarker.setLatLng(latlng);
+          } else {
+            const tempIcon = createCustomMarkerIcon('temp');
+            state.tempMarker = L.marker(latlng, { icon: tempIcon }).addTo(map);
+          }
+          
+          alert(`全体写真からGPS撮影位置を抽出しました！\n緯度: ${latitude.toFixed(6)}\n経度: ${longitude.toFixed(6)}`);
+        }
+      });
+    });
+
+    function convertDMSToDD(degrees, minutes, seconds, direction) {
+      const d = degrees.numerator ? (degrees.numerator / degrees.denominator) : parseFloat(degrees);
+      const m = minutes.numerator ? (minutes.numerator / minutes.denominator) : parseFloat(minutes);
+      const s = seconds.numerator ? (seconds.numerator / seconds.denominator) : parseFloat(seconds);
+      
+      let dd = d + m / 60 + s / 3600;
+      if (direction === "S" || direction === "W") {
+        dd = dd * -1;
+      }
+      return dd;
+    }
+
+    /* ==========================================================================
+       Wizard Form Submit & State registration
+       ========================================================================== */
+    document.getElementById('wizardForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const lat = parseFloat(document.getElementById('inputLat').value);
+      const lng = parseFloat(document.getElementById('inputLng').value);
+
+      if (isNaN(lat) || isNaN(lng)) {
+        alert('位置情報がありません。地図をクリックして緯度・経度を設定してください。');
+        return;
+      }
+
       const nextIdNum = state.trees.length + 1;
       const nextIdStr = 'TR-' + String(nextIdNum).padStart(3, '0');
 
-      // Create new Tree item
+      // Determine highest danger rank for final summary color badge
+      const risks = [
+        document.getElementById('evalBranchRisk').value,
+        document.getElementById('evalTrunkRisk').value,
+        document.getElementById('evalRootRisk').value,
+        document.getElementById('evalTrafficRisk').value
+      ];
+      let maxRisk = 'I';
+      if (risks.includes('IV')) maxRisk = 'IV';
+      else if (risks.includes('III')) maxRisk = 'III';
+      else if (risks.includes('II')) maxRisk = 'II';
+
+      const declineTrunkVal = document.getElementById('selectTrunkDecline').value;
+      const declineRootVal = document.getElementById('selectRootDecline').value;
+
       const newTree = {
         id: nextIdStr,
-        treeNum: inputTreeNum.value.trim(),
-        species: inputSpecies.value.trim(),
+        treeNum: document.getElementById('inputTreeNum').value.trim(),
+        species: document.getElementById('inputSpecies').value.trim(),
         lat: lat,
         lng: lng,
-        height: parseFloat(inputHeight.value),
-        circ: parseInt(inputCirc.value, 10),
-        crown: parseFloat(inputCrown.value),
-        vigor: parseInt(selectVigor.value, 10),
-        risk: selectRisk.value,
-        photo: state.uploadedPhotoBase64
+        height: parseFloat(document.getElementById('inputHeight').value),
+        circ: parseInt(document.getElementById('inputCirc').value, 10),
+        crown: parseFloat(document.getElementById('inputCrown').value),
+        vigor: parseInt(document.getElementById('selectVigor').value, 10),
+        shape: parseInt(document.getElementById('selectShape').value, 10),
+        photo: formState.overallPhoto,
+        risk: maxRisk,
+        
+        // Branch
+        branchPosition: parseFloat(document.getElementById('inputBranchPos').value || 0),
+        branchDead: document.getElementById('selectBranchDead').value,
+        branchAnomaly: document.getElementById('selectBranchAnomaly').value,
+        branchJunctionAnomaly: document.getElementById('selectBranchJunction').value,
+        branchPestResult: formState.aiResults['inputBranchPestPhoto'] || null,
+
+        // Trunk
+        trunkCavity: document.getElementById('selectTrunkCavity').value,
+        trunkDecay: document.getElementById('selectTrunkDecay').value,
+        trunkPenetration: document.getElementById('selectTrunkPenetration').value,
+        trunkBarkLoss: document.getElementById('selectTrunkBarkLoss').value,
+        trunkPercussion: document.getElementById('selectTrunkPercussion').value,
+        trunkDecline: declineTrunkVal,
+        trunkDeclineOther: declineTrunkVal === 'その他' ? document.getElementById('inputTrunkDeclineOther').value.trim() : '',
+        trunkOtherAnomaly: document.getElementById('textareaTrunkOther').value.trim(),
+        trunkPestResult: formState.aiResults['inputTrunkPestPhoto'] || null,
+        trunkFruitingResult: formState.aiResults['inputTrunkFruitingPhoto'] || null,
+
+        // Root
+        rootCavity: document.getElementById('selectRootCavity').value,
+        rootDecay: document.getElementById('selectRootDecay').value,
+        rootPenetration: document.getElementById('selectRootPenetration').value,
+        rootBarkLoss: document.getElementById('selectRootBarkLoss').value,
+        rootPercussion: document.getElementById('selectRootPercussion').value,
+        rootDecline: declineRootVal,
+        rootDeclineOther: declineRootVal === 'その他' ? document.getElementById('inputRootDeclineOther').value.trim() : '',
+        rootGirdling: document.getElementById('selectRootGirdling').value,
+        rootExposed: document.getElementById('inputRootExposed').value.trim(),
+        rootOtherAnomaly: document.getElementById('textareaRootOther').value.trim(),
+        rootPestResult: formState.aiResults['inputRootPestPhoto'] || null,
+        rootFruitingResult: formState.aiResults['inputRootFruitingPhoto'] || null,
+
+        // Traffic
+        sway: document.getElementById('selectSway').value,
+        lean: document.getElementById('selectLean').value,
+        clearanceRoadway: document.getElementById('selectClearanceRoadway').value,
+        clearanceSidewalk: document.getElementById('selectClearanceSidewalk').value,
+        obstructionVisibility: document.getElementById('selectObstructionVisibility').value,
+        obstructionLight: document.getElementById('selectObstructionLight').value,
+        riskWind: document.getElementById('selectRiskWind').value,
+        riskSuppression: document.getElementById('selectRiskSuppression').value,
+        otherSurroundings: document.getElementById('inputOtherSurroundings').value.trim(),
+
+        // Evaluations
+        evalBranch: {
+          damage: document.getElementById('evalBranchDamage').value,
+          urgency: document.getElementById('evalBranchUrgency').value,
+          risk: document.getElementById('evalBranchRisk').value,
+          action: document.getElementById('evalBranchAction').value
+        },
+        evalTrunk: {
+          damage: document.getElementById('evalTrunkDamage').value,
+          urgency: document.getElementById('evalTrunkUrgency').value,
+          risk: document.getElementById('evalTrunkRisk').value,
+          action: document.getElementById('evalTrunkAction').value
+        },
+        evalRoot: {
+          damage: document.getElementById('evalRootDamage').value,
+          urgency: document.getElementById('evalRootUrgency').value,
+          risk: document.getElementById('evalRootRisk').value,
+          action: document.getElementById('evalRootAction').value
+        },
+        evalTraffic: {
+          damage: document.getElementById('evalTrafficDamage').value,
+          urgency: document.getElementById('evalTrafficUrgency').value,
+          risk: document.getElementById('evalTrafficRisk').value,
+          action: document.getElementById('evalTrafficAction').value
+        },
+        actionNotes: document.getElementById('textareaActionNotes').value.trim()
       };
 
-      // Push to state & Re-render Map pins
       state.trees.push(newTree);
       renderMarkers();
-
-      // Clear & switch
-      alert(`樹木カルテ ${nextIdStr} を正常に登録しました。`);
+      
+      alert(`新規樹木点検カルテ ${nextIdStr} を登録しました。`);
       switchMode('summary');
     });
 
     /* ==========================================================================
-       Setup Listeners & Start
+       Setup Listeners & Initialization
        ========================================================================== */
     triggerRegisterBtn.addEventListener('click', () => switchMode('register'));
     backToSummaryBtn.addEventListener('click', () => switchMode('summary'));
     cancelRegisterBtn.addEventListener('click', () => switchMode('summary'));
 
+    // Wizard navigation controls
+    nextStepBtn.addEventListener('click', handleWizardNext);
+    prevStepBtn.addEventListener('click', handleWizardPrev);
+
+    // Tab clicks
+    tabBtnSummary.addEventListener('click', () => switchDetailTab('summary'));
+    tabBtnAi.addEventListener('click', () => switchDetailTab('ai'));
+
     window.addEventListener('DOMContentLoaded', () => {
       initMap();
       renderMarkers();
       switchMode('summary');
+      lucide.createIcons();
     });
   </script>
 </body>
