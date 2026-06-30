@@ -218,7 +218,7 @@
              ========================================== -->
         <div class="panel-view flex flex-col gap-6" id="summaryView">
           <!-- Summary statistics -->
-          <div class="stats-card bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+          <div class="stats-card bg-slate-955/60 border border-slate-800 rounded-xl p-4">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">全体点検状況</h3>
             <div class="grid grid-cols-2 gap-4">
               <div class="flex flex-col gap-0.5">
@@ -244,7 +244,7 @@
           </div>
 
           <!-- Create Button -->
-          <button class="btn-create w-full py-3 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="triggerRegisterBtn">
+          <button class="btn-create w-full py-3 bg-brand hover:bg-brand-hover text-slate-955 font-bold rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="triggerRegisterBtn">
             <i data-lucide="plus" class="w-4 h-4"></i>
             新規点検カルテを作成
           </button>
@@ -268,7 +268,7 @@
           </button>
 
           <!-- Step Indicator -->
-          <div class="w-full bg-slate-950 rounded-xl p-3 border border-slate-800">
+          <div class="w-full bg-slate-955 rounded-xl p-3 border border-slate-800">
             <div class="flex justify-between items-center text-xs font-bold mb-2">
               <span class="text-brand" id="wizardStepTitle">STEP 1 / 6: 基本情報</span>
               <span class="text-slate-400" id="wizardPercent">17%</span>
@@ -279,7 +279,7 @@
           </div>
 
           <!-- Wizard Form -->
-          <form id="wizardForm" onsubmit="return false;" class="space-y-4">
+          <form id="wizardForm" class="space-y-4" onsubmit="event.preventDefault();">
             
             <!-- STEP 1: 基本情報 -->
             <div class="wizard-step-page space-y-4" id="stepPage-1">
@@ -288,7 +288,7 @@
               <!-- Overall Photo Upload with Exif-JS -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全景写真のアップロード (GPS自動取得)</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-955 rounded-xl overflow-hidden cursor-pointer transition-all">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-1" id="placeholderOverallPhoto">
                     <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-500"></i>
                     <span class="text-[11px] font-semibold">画像を選択 (Exifから位置情報を自動取得)</span>
@@ -306,8 +306,8 @@
                   画像アップロード、または地図をクリックして位置を取得
                 </div>
                 <div class="grid grid-cols-2 gap-3 mt-1">
-                  <input type="text" placeholder="緯度" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLat" readonly required />
-                  <input type="text" placeholder="経度" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLng" readonly required />
+                  <input type="text" placeholder="緯度" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLat" readonly />
+                  <input type="text" placeholder="経度" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs text-brand font-bold focus:border-brand outline-none cursor-default border-dashed" id="inputLng" readonly />
                 </div>
               </div>
 
@@ -315,11 +315,11 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputTreeNum">樹木番号</label>
-                  <input type="text" placeholder="例: TR-004" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTreeNum" required />
+                  <input type="text" placeholder="例: TR-004" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTreeNum" />
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputSpecies">樹種名</label>
-                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
+                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" />
                 </div>
               </div>
 
@@ -327,15 +327,15 @@
               <div class="grid grid-cols-3 gap-2">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputHeight">樹高 (m)</label>
-                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputHeight" required />
+                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputHeight" />
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputCirc">幹周 (cm)</label>
-                  <input type="number" placeholder="cm" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCirc" required />
+                  <input type="number" placeholder="cm" class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCirc" />
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputCrown">枝張り (m)</label>
-                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCrown" required />
+                  <input type="number" step="0.1" placeholder="m" class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputCrown" />
                 </div>
               </div>
 
@@ -343,7 +343,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectVigor">樹勢 (健全度)</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectVigor" required>
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectVigor">
                     <option value="1">1:良い</option>
                     <option value="2" selected>2:普通</option>
                     <option value="3">3:少し悪い</option>
@@ -353,7 +353,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectShape">樹形</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectShape" required>
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectShape">
                     <option value="1">1:良い</option>
                     <option value="2" selected>2:普通</option>
                     <option value="3">3:少し悪い</option>
@@ -371,28 +371,28 @@
               <!-- anomalous height position -->
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputBranchPos">異常発生位置 (m)</label>
-                <input type="number" step="0.1" placeholder="例: 4.5" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputBranchPos" />
+                <input type="number" step="0.1" placeholder="例: 4.5" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputBranchPos" />
               </div>
 
               <!-- dead branches -->
               <div class="grid grid-cols-3 gap-2">
                 <div class="form-group flex flex-col gap-1 col-span-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枯れ枝・ぶら下がり枝</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchDead">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchDead">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1 col-span-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枝の異常</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchAnomaly">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchAnomaly">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1 col-span-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">大枝分岐部の異常</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchJunction">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchJunction">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -402,7 +402,7 @@
               <!-- Branch Pest photo & AI mock -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-24 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-24 border border-slate-700 bg-slate-955 rounded-xl overflow-hidden cursor-pointer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
                     <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
                     <span class="text-[10px] font-semibold">カメラ起動 / 写真を選択</span>
@@ -430,7 +430,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkCavity">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkCavity">
                     <option value="無" selected>無</option>
                     <option value="芯未達">芯未達</option>
                     <option value="芯達">芯達</option>
@@ -438,7 +438,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkDecay">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkDecay">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -448,7 +448,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPenetration">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPenetration">
                     <option value="無" selected>無</option>
                     <option value="未達">未達</option>
                     <option value="達">達</option>
@@ -456,7 +456,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹皮の欠損</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkBarkLoss">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkBarkLoss">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -466,21 +466,21 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">打診音異常</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPercussion">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPercussion">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputTrunkDecline">枯死・衰退要因</label>
-                  <input type="text" placeholder="外傷、落雷等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTrunkDecline" />
+                  <input type="text" placeholder="外傷、落雷等" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTrunkDecline" />
                 </div>
               </div>
 
               <!-- Pest photo (AI) -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-955 rounded-xl overflow-hidden cursor-pointer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
                     <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
                     <span class="text-[10px] font-semibold">写真を選択</span>
@@ -501,7 +501,7 @@
               <!-- Fruiting body photo (AI) -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">子実体（きのこ等）の写真（AI診断対応）</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-955 rounded-xl overflow-hidden cursor-pointer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
                     <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
                     <span class="text-[10px] font-semibold">写真を選択</span>
@@ -513,7 +513,7 @@
                   </div>
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputTrunkFruitingPhoto" onchange="handleAIUpload(this, 'trunk')" />
                 </div>
-                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
@@ -522,7 +522,7 @@
               <!-- other anomaly -->
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaTrunkOther">その他幹の異常</label>
-                <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaTrunkOther"></textarea>
+                <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaTrunkOther"></textarea>
               </div>
             </div>
 
@@ -533,7 +533,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootCavity">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootCavity">
                     <option value="無" selected>無</option>
                     <option value="芯未達">芯未達</option>
                     <option value="芯達">芯達</option>
@@ -541,7 +541,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -551,7 +551,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPenetration">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPenetration">
                     <option value="無" selected>無</option>
                     <option value="未達">未達</option>
                     <option value="達">達</option>
@@ -559,7 +559,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹皮の欠損</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootBarkLoss">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootBarkLoss">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -569,21 +569,21 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">打診音異常</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPercussion">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPercussion">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootDecline">枯死・衰退要因</label>
-                  <input type="text" placeholder="舗装による圧迫、外傷等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootDecline" />
+                  <input type="text" placeholder="舗装による圧迫、外傷等" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootDecline" />
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">ガードリングルート</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootGirdling">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootGirdling">
                     <option value="無" selected>無</option>
                     <option value="半分未満">半分未満</option>
                     <option value="半分以上">半分以上</option>
@@ -591,14 +591,14 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根被害</label>
-                  <input type="text" placeholder="舗装持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
+                  <input type="text" placeholder="舗装持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
                 </div>
               </div>
 
               <!-- Pest photo (AI) -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">病害虫の写真（AI診断対応）</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-955 rounded-xl overflow-hidden cursor-pointer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
                     <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
                     <span class="text-[10px] font-semibold">写真を選択</span>
@@ -619,7 +619,7 @@
               <!-- Fruiting body photo (AI) -->
               <div class="form-group flex flex-col gap-1.5">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">子実体（きのこ等）の写真（AI診断対応）</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-950 rounded-xl overflow-hidden cursor-pointer">
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-20 border border-slate-700 bg-slate-955 rounded-xl overflow-hidden cursor-pointer">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-0.5">
                     <i data-lucide="image" class="w-5 h-5 text-slate-500"></i>
                     <span class="text-[10px] font-semibold">写真を選択</span>
@@ -639,7 +639,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他根の異常</label>
-                <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
+                <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
               </div>
             </div>
 
@@ -650,7 +650,7 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">樹体の揺れ</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectSway">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectSway">
                     <option value="無" selected>無</option>
                     <option value="小">小</option>
                     <option value="中">中</option>
@@ -659,7 +659,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">傾斜</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectLean">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectLean">
                     <option value="無" selected>無</option>
                     <option value="小">小</option>
                     <option value="中">中</option>
@@ -671,14 +671,14 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
                     <option value="4.5m以上" selected>4.5m以上</option>
                     <option value="4.5m未満">4.5m未満</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (歩道部)</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
+                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
                     <option value="2.5m以上" selected>2.5m以上</option>
                     <option value="2.5m未満">2.5m未満</option>
                   </select>
@@ -687,7 +687,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認・照明阻害 (信号・標識・街灯)</label>
-                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstruction">
+                <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstruction">
                   <option value="無" selected>無</option>
                   <option value="有">有</option>
                 </select>
@@ -695,7 +695,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputOtherSurroundings">周辺状況</label>
-                <input type="text" placeholder="電線の近接、周辺施設の近接状況など" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputOtherSurroundings" />
+                <input type="text" placeholder="電線の近接、周辺施設の近接状況など" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputOtherSurroundings" />
               </div>
             </div>
 
@@ -705,7 +705,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectRisk">総合危険度ランク</label>
-                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-bold text-brand focus:border-brand outline-none" id="selectRisk" required>
+                <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs font-bold text-brand focus:border-brand outline-none" id="selectRisk">
                   <option value="I" selected>RANK I: 被害無〜小 (健全)</option>
                   <option value="II">RANK II: 被害中 (注意点検)</option>
                   <option value="III">RANK III: 倒伏危険性低 (要処置)</option>
@@ -715,7 +715,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectRecommendedAction">推奨する処置</label>
-                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRecommendedAction" required>
+                <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRecommendedAction">
                   <option value="短期観察" selected>短期観察</option>
                   <option value="剪定">剪定</option>
                   <option value="詳細診断">詳細診断</option>
@@ -726,7 +726,7 @@
 
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaActionNotes">処置の留意点・想定される影響等</label>
-                <textarea placeholder="倒伏防止用の支柱、剪定時の注意点など" class="w-full h-24 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaActionNotes"></textarea>
+                <textarea placeholder="倒伏防止用の支柱、剪定時の注意点など" class="w-full h-24 p-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaActionNotes"></textarea>
               </div>
             </div>
 
@@ -738,7 +738,7 @@
               <button type="button" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10" id="nextStepBtn">
                 次のステップへ
               </button>
-              <button type="submit" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10 hidden" id="submitBtn">
+              <button type="button" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10 hidden" id="submitBtn">
                 点検カルテを登録
               </button>
             </div>
@@ -832,7 +832,7 @@
               <div class="p-3 text-slate-200 font-semibold" id="repBranchDead">-</div>
             </div>
             <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
-              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">枝の異常</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">枝 of 異常</div>
               <div class="p-3 border-r border-slate-700 text-slate-200" id="repBranchAnomaly">-</div>
               <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">大枝分岐部の異常</div>
               <div class="p-3 text-slate-200 font-semibold" id="repBranchJunction">-</div>
@@ -911,8 +911,8 @@
             <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
               <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">視認・照明阻害</div>
               <div class="p-3 border-r border-slate-700 text-slate-200" id="repObstruction">-</div>
-              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">その他周辺状況</div>
-              <div class="p-3 text-slate-200" id="repOtherSurroundings">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400 font-semibold">その他周辺状況</div>
+              <div class="p-3 text-slate-200 font-medium" id="repOtherSurroundings">-</div>
             </div>
 
             <!-- Section header: General Evaluation & Action -->
@@ -1505,7 +1505,7 @@
           card.className = 'bg-slate-950/40 border border-slate-850 rounded-xl overflow-hidden shadow-lg';
           card.innerHTML = `
             <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-350">${item.label}</div>
-            <div class="h-48 bg-slate-950 flex items-center justify-center overflow-hidden">
+            <div class="h-48 bg-slate-955 flex items-center justify-center overflow-hidden">
               <img src="${item.data.photo}" alt="AI" class="w-full h-full object-cover" />
             </div>
             <div class="p-3 bg-brand/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
@@ -1736,29 +1736,43 @@
     /* ==========================================================================
        Wizard Form Submit & State registration
        ========================================================================== */
-    document.getElementById('wizardForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+    function handleFormSubmit(e) {
+      if (e) e.preventDefault();
 
       const lat = parseFloat(document.getElementById('inputLat').value);
       const lng = parseFloat(document.getElementById('inputLng').value);
 
       if (isNaN(lat) || isNaN(lng)) {
-        alert('位置情報がありません。地図をクリックして緯度・経度を設定してください。');
+        alert('位置情報がありません。全体写真をアップロードしてGPSを取得するか、地図上をクリックして緯度・経度を設定してください。');
+        showWizardStep(1);
         return;
       }
 
-      const nextIdNum = state.trees.length + 1;
-      const nextIdStr = 'TR-' + String(nextIdNum).padStart(3, '0');
+      // Validate required fields manually to avoid hidden browser blocks
+      const treeNum = document.getElementById('inputTreeNum').value.trim();
+      const species = document.getElementById('inputSpecies').value.trim();
+      const height = document.getElementById('inputHeight').value;
+      const circ = document.getElementById('inputCirc').value;
+      const crown = document.getElementById('inputCrown').value;
+
+      if (!treeNum || !species || !height || !circ || !crown) {
+        alert('基本情報（樹木番号、樹種名、寸法情報）が不足しています。STEP 1の入力を行ってください。');
+        showWizardStep(1);
+        return;
+      }
+
+      // Generate unique ID
+      const newIdStr = 'TR-' + Date.now();
 
       const newTree = {
-        id: nextIdStr,
-        treeNum: document.getElementById('inputTreeNum').value.trim(),
-        species: document.getElementById('inputSpecies').value.trim(),
+        id: newIdStr,
+        treeNum: treeNum,
+        species: species,
         lat: lat,
         lng: lng,
-        height: parseFloat(document.getElementById('inputHeight').value),
-        circ: parseInt(document.getElementById('inputCirc').value, 10),
-        crown: parseFloat(document.getElementById('inputCrown').value),
+        height: parseFloat(height),
+        circ: parseInt(circ, 10),
+        crown: parseFloat(crown),
         vigor: parseInt(document.getElementById('selectVigor').value, 10),
         shape: parseInt(document.getElementById('selectShape').value, 10),
         photo: formState.overallPhoto,
@@ -1808,20 +1822,22 @@
         otherSurroundings: document.getElementById('inputOtherSurroundings').value.trim()
       };
 
-      // 1. Save data in state array and place new pin on map
+      // 1. Save data to state array
       state.trees.push(newTree);
+
+      // 2. Place new danger marker pin on map
       renderMarkers();
       
-      // 2. Reset form input elements and return wizard page back to Page 1
+      // 3. Reset form input elements and return wizard step count to Page 1
       resetFormElements();
       showWizardStep(1);
 
-      // 3. Switch back-end side panel back to list view
+      // 4. Switch left side panel view back to list tab
       switchMode('summary');
       
-      // 4. Immediately open the Center Modal PDF report for the new tree!
+      // 5. Automatically pop up the Central Report Modal for the newly created tree
       openReportModal(newTree.id);
-    });
+    }
 
     /* ==========================================================================
        Setup Listeners & Initialization
@@ -1832,6 +1848,9 @@
     // Wizard navigation controls
     nextStepBtn.addEventListener('click', handleWizardNext);
     prevStepBtn.addEventListener('click', handleWizardPrev);
+
+    // Register button direct click binding
+    submitBtn.addEventListener('click', handleFormSubmit);
 
     window.addEventListener('DOMContentLoaded', () => {
       initMap();
