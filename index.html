@@ -18,7 +18,7 @@
   
   <!-- Exif-JS -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
- 
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -141,24 +141,62 @@
       100% { transform: scale(2.6); opacity: 0; }
     }
 
-    /* HTML, Body height definition */
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    
-    /* Ensure Map container has size */
-    #map {
-      height: 100%;
-      width: 100%;
-      min-height: 300px;
+    /* Vigor Text Colors */
+    .vigor-text.vigor-1 { color: #10b981; }
+    .vigor-text.vigor-2 { color: #34d399; }
+    .vigor-text.vigor-3 { color: #f59e0b; }
+    .vigor-text.vigor-4 { color: #f97316; }
+    .vigor-text.vigor-5 { color: #ef4444; }
+
+    /* Print styling overrides */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #reportModal, #reportModal * {
+        visibility: visible;
+      }
+      #reportModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-height: none;
+        overflow: visible;
+        background: white !important;
+        color: black !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      /* Hide navigation & utility stuff in print */
+      #closeModalBtn, .print-btn, .tab-header-wrapper {
+        display: none !important;
+      }
+      #modalReportTabContent {
+        display: block !important;
+      }
+      #modalReportTabContent .border {
+        border-color: #000000 !important;
+        background-color: transparent !important;
+        color: #000000 !important;
+      }
+      #modalReportTabContent div {
+        border-color: #000000 !important;
+        color: #000000 !important;
+      }
+      #modalReportTabContent .bg-slate-900, #modalReportTabContent .bg-slate-900\/50 {
+        background-color: #f1f5f9 !important;
+        color: #000000 !important;
+      }
+      .vigor-text {
+        color: #000000 !important;
+      }
     }
   </style>
 </head>
 <body class="w-full h-full overflow-hidden bg-slate-950 text-slate-100 font-sans">
 
-  <div class="dashboard-container w-full h-screen flex flex-col md:flex-row overflow-hidden relative">
+  <div class="dashboard-container w-full h-full flex flex-col md:flex-row overflow-hidden relative">
     
     <!-- Left Sidebar: Form & Stats (Fixed Width 420px) -->
     <aside class="side-panel w-full md:w-[420px] h-1/2 md:h-full bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl relative overflow-hidden">
@@ -221,120 +259,7 @@
         </div>
 
         <!-- ==========================================
-             VIEW 2: TREE DETAILS (TABBED)
-             ========================================== -->
-        <div class="panel-view hidden flex flex-col gap-5" id="detailView">
-          <button class="back-btn flex items-center gap-2 text-xs font-semibold px-3 py-2 border border-slate-700 hover:border-slate-500 rounded-lg transition-all" id="backToSummaryBtn">
-            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-            一覧に戻る
-          </button>
-
-          <div class="flex flex-col gap-1">
-            <div class="flex items-start justify-between">
-              <div class="flex flex-col">
-                <h2 class="text-xl font-bold text-slate-100" id="detailTreeName">ケヤキ</h2>
-                <span class="text-xs text-slate-400 mt-0.5" id="detailTreeId">TR-001</span>
-              </div>
-              <span class="risk-badge text-xs px-2.5 py-1 font-bold rounded-lg border" id="detailRiskBadge">RANK I</span>
-            </div>
-          </div>
-
-          <!-- Details Tabs Header -->
-          <div class="flex border-b border-slate-800 text-xs font-semibold">
-            <button class="flex-1 py-2.5 text-brand border-b-2 border-brand" id="tabBtnSummary">カルテ詳細サマリー</button>
-            <button class="flex-1 py-2.5 text-slate-400 hover:text-slate-200" id="tabBtnAi">写真とAI判定履歴</button>
-          </div>
-
-          <!-- Tab Content 1: Summary -->
-          <div id="tabContentSummary" class="space-y-5">
-            <div class="bg-slate-950/40 border border-slate-800/60 rounded-xl overflow-hidden shadow-lg">
-              <div class="h-44 bg-slate-900 flex items-center justify-center overflow-hidden relative">
-                <div class="text-slate-600 flex flex-col items-center gap-1.5" id="detailTreeFallbackGraphic">
-                  <i data-lucide="image" class="w-12 h-12 text-slate-700"></i>
-                  <span class="text-xs">写真未登録</span>
-                </div>
-                <img src="" alt="Tree" class="hidden w-full h-full object-cover" id="detailTreePhoto" />
-              </div>
-              
-              <!-- Specs Grid -->
-              <div class="p-4 grid grid-cols-2 gap-3 text-xs border-t border-slate-800/80">
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹木番号</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeNum">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹勢健全度</div>
-                  <div class="font-bold mt-0.5" id="detailTreeVigor">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹形</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeShape">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">樹高 (H)</div>
-                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeHeight">-</span> m</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">幹周 (C)</div>
-                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeCirc">-</span> cm</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">枝張り (W)</div>
-                  <div class="font-bold text-slate-200 mt-0.5"><span id="detailTreeCrown">-</span> m</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2">
-                  <div class="text-[10px] text-slate-400 uppercase font-semibold">位置情報 (緯度, 経度)</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="detailTreeLatLng">-</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Anomalies Summary Tags -->
-            <div class="space-y-2">
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常診断状況</h4>
-              <div class="flex flex-wrap gap-1.5" id="detailAnomaliesTags">
-                <!-- tags populated dynamically -->
-              </div>
-            </div>
-
-            <!-- Treatment Details table -->
-            <div class="space-y-2">
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">部位別被害と処置</h4>
-              <div class="overflow-hidden border border-slate-800 rounded-lg text-[11px] bg-slate-950/40">
-                <table class="w-full text-left border-collapse">
-                  <thead>
-                    <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 font-semibold">
-                      <th class="p-2">部位</th>
-                      <th class="p-2">被害度</th>
-                      <th class="p-2">緊急性</th>
-                      <th class="p-2">推奨処置</th>
-                    </tr>
-                  </thead>
-                  <tbody id="detailTreatmentTableBody">
-                    <!-- rows populated dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Notes Section -->
-            <div class="bg-slate-950/30 border border-slate-800 p-3 rounded-lg text-xs space-y-1.5">
-              <div class="font-bold text-slate-400">処置の留意点・想定される影響等:</div>
-              <p class="text-slate-300 leading-relaxed whitespace-pre-wrap" id="detailActionNotes">-</p>
-            </div>
-          </div>
-
-          <!-- Tab Content 2: AI Diagnosis images & logs -->
-          <div id="tabContentAi" class="hidden space-y-4">
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">異常箇所の写真とAI診断履歴</div>
-            <div class="flex flex-col gap-4" id="detailAiImageGrid">
-              <!-- AI images populated dynamically -->
-            </div>
-          </div>
-        </div>
-
-        <!-- ==========================================
-             VIEW 3: WIZARD FORM (NEW TREE)
+             VIEW 2: WIZARD FORM (NEW TREE)
              ========================================== -->
         <div class="panel-view hidden flex flex-col gap-4" id="registerView">
           <!-- Back button / Cancel -->
@@ -362,27 +287,14 @@
               
               <!-- Overall Photo Upload with Exif-JS -->
               <div class="form-group flex flex-col gap-1.5">
-                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全体写真のアップロード (GPS自動取得 & AI樹種判定)</label>
-                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all" id="overallPhotoContainer">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">全景写真のアップロード (GPS自動取得)</label>
+                <div class="photo-upload-container relative flex flex-col justify-center items-center h-28 border border-dashed border-slate-700 hover:border-slate-500 bg-slate-950 rounded-xl overflow-hidden cursor-pointer transition-all">
                   <div class="placeholder-info flex flex-col items-center text-slate-400 gap-1" id="placeholderOverallPhoto">
                     <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-500"></i>
-                    <span class="text-[11px] font-semibold">画像を選択 (Exifから緯度経度を取得)</span>
+                    <span class="text-[11px] font-semibold">画像を選択 (Exifから位置情報を自動取得)</span>
                   </div>
                   <img src="" alt="Overall" class="hidden w-full h-full object-cover absolute top-0 left-0" id="previewOverallPhoto" />
-                  
-                  <!-- AI Spinner for Species Detection -->
-                  <div class="hidden absolute inset-0 bg-slate-900/90 flex flex-col justify-center items-center gap-1" id="overallAiSpinner">
-                    <div class="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-[10px] text-emerald-400 font-semibold">AIエンジンが樹種を解析中...</span>
-                  </div>
-
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputPhoto" />
-                </div>
-                
-                <!-- AI Species Result Box -->
-                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400" id="overallAiResultBox">
-                  <span class="font-semibold" id="overallAiResultLabel">AI判定: -</span>
-                  <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded" id="overallAiResultRate">-</span>
                 </div>
               </div>
 
@@ -407,7 +319,7 @@
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputSpecies">樹種名</label>
-                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
+                  <input type="text" placeholder="例: ケヤキ" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputSpecies" required />
                 </div>
               </div>
 
@@ -430,7 +342,7 @@
               <!-- Vigor & Shape select -->
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectVigor">樹勢（健全度）</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectVigor">樹勢 (健全度)</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectVigor" required>
                     <option value="1">1:良い</option>
                     <option value="2" selected>2:普通</option>
@@ -465,7 +377,7 @@
               <!-- dead branches -->
               <div class="grid grid-cols-3 gap-2">
                 <div class="form-group flex flex-col gap-1 col-span-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枯れ枝</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">枯れ枝・ぶら下がり枝</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchDead">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
@@ -479,7 +391,7 @@
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1 col-span-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">大枝分岐部</label>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">大枝分岐部の異常</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectBranchJunction">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
@@ -504,7 +416,7 @@
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputBranchPestPhoto" onchange="handleAIUpload(this, 'branch')" />
                 </div>
                 <!-- AI Result Box -->
-                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
@@ -520,8 +432,8 @@
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkCavity">
                     <option value="無" selected>無</option>
-                    <option value="有（芯未達）">有（芯未達）</option>
-                    <option value="有（芯達）">有（芯達）</option>
+                    <option value="芯未達">芯未達</option>
+                    <option value="芯達">芯達</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
@@ -538,8 +450,8 @@
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkPenetration">
                     <option value="無" selected>無</option>
-                    <option value="有（芯未達）">有（芯未達）</option>
-                    <option value="有（芯達）">有（芯達）</option>
+                    <option value="未達">未達</option>
+                    <option value="達">達</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
@@ -560,17 +472,10 @@
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">衰退要因</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectTrunkDecline" onchange="toggleDeclineTextInput(this, 'inputTrunkDeclineOther')">
-                    <option value="無" selected>無</option>
-                    <option value="外傷">外傷</option>
-                    <option value="その他">その他（記載）</option>
-                  </select>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputTrunkDecline">枯死・衰退要因</label>
+                  <input type="text" placeholder="外傷、落雷等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputTrunkDecline" />
                 </div>
               </div>
-
-              <!-- decline other text input (hidden by default) -->
-              <input type="text" placeholder="その他の要因を記入してください" class="hidden input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none mt-1" id="inputTrunkDeclineOther" />
 
               <!-- Pest photo (AI) -->
               <div class="form-group flex flex-col gap-1.5">
@@ -608,7 +513,7 @@
                   </div>
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputTrunkFruitingPhoto" onchange="handleAIUpload(this, 'trunk')" />
                 </div>
-                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
@@ -616,7 +521,7 @@
 
               <!-- other anomaly -->
               <div class="form-group flex flex-col gap-1">
-                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaTrunkOther">その他異常</label>
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaTrunkOther">その他幹の異常</label>
                 <textarea placeholder="ひび割れ、巻き込み不良等の詳細を記入" class="w-full h-16 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaTrunkOther"></textarea>
               </div>
             </div>
@@ -630,13 +535,13 @@
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">空洞有無</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootCavity">
                     <option value="無" selected>無</option>
-                    <option value="有（芯未達）">有（芯未達）</option>
-                    <option value="有（芯達）">有（芯達）</option>
+                    <option value="芯未達">芯未達</option>
+                    <option value="芯達">芯達</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">腐朽有無</label>
-                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecay">
                     <option value="無" selected>無</option>
                     <option value="有">有</option>
                   </select>
@@ -648,8 +553,8 @@
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">鋼棒貫入</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootPenetration">
                     <option value="無" selected>無</option>
-                    <option value="有（芯未達）">有（芯未達）</option>
-                    <option value="有（芯達）">有（芯達）</option>
+                    <option value="未達">未達</option>
+                    <option value="達">達</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
@@ -670,29 +575,23 @@
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">衰退要因</label>
-                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootDecline" onchange="toggleDeclineTextInput(this, 'inputRootDeclineOther')">
-                    <option value="無" selected>無</option>
-                    <option value="外傷">外傷</option>
-                    <option value="その他">その他（記載）</option>
-                  </select>
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootDecline">枯死・衰退要因</label>
+                  <input type="text" placeholder="舗装による圧迫、外傷等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootDecline" />
                 </div>
               </div>
-
-              <input type="text" placeholder="その他の要因を記入してください" class="hidden input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none mt-1" id="inputRootDeclineOther" />
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">ガードリングルート</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRootGirdling">
                     <option value="無" selected>無</option>
-                    <option value="有（1/2未満）">有（1/2未満）</option>
-                    <option value="有（1/2以上）">有（1/2以上）</option>
+                    <option value="半分未満">半分未満</option>
+                    <option value="半分以上">半分以上</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根の被害</label>
-                  <input type="text" placeholder="舗装の持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
+                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputRootExposed">露出根被害</label>
+                  <input type="text" placeholder="舗装持ち上げ、断根等" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputRootExposed" />
                 </div>
               </div>
 
@@ -711,7 +610,7 @@
                   </div>
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputRootPestPhoto" onchange="handleAIUpload(this, 'root')" />
                 </div>
-                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
@@ -732,14 +631,14 @@
                   </div>
                   <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="inputRootFruitingPhoto" onchange="handleAIUpload(this, 'root')" />
                 </div>
-                <div class="hidden mt-1.5 p-2 bg-emerald-955/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
+                <div class="hidden mt-1.5 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs text-emerald-400">
                   <span class="font-semibold result-label">AI判定結果: -</span>
                   <span class="font-bold text-[9px] bg-emerald-500/20 px-1.5 py-0.5 rounded result-rate">-</span>
                 </div>
               </div>
 
               <div class="form-group flex flex-col gap-1">
-                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他異常</label>
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaRootOther">その他根の異常</label>
                 <textarea placeholder="根の浮き上がり、巻き込み等の詳細を記入" class="w-full h-14 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaRootOther"></textarea>
               </div>
             </div>
@@ -772,398 +671,79 @@
               <div class="grid grid-cols-2 gap-3">
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (車道部)</label>
-                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
+                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceRoadway">
                     <option value="4.5m以上" selected>4.5m以上</option>
-                    <option value="4.5m未満→枝・幹">4.5m未満→枝・幹</option>
+                    <option value="4.5m未満">4.5m未満</option>
                   </select>
                 </div>
                 <div class="form-group flex flex-col gap-1">
                   <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">建築限界 (歩道部)</label>
                   <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectClearanceSidewalk">
                     <option value="2.5m以上" selected>2.5m以上</option>
-                    <option value="2.5m未満→枝・幹">2.5m未満→枝・幹</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認阻害 (信号・標識)</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionVisibility">
-                    <option value="無" selected>無</option>
-                    <option value="有→枝・幹">有→枝・幹</option>
-                  </select>
-                </div>
-                <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">照明照射阻害</label>
-                  <select class="input-field h-9 px-2 bg-slate-955 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstructionLight">
-                    <option value="無" selected>無</option>
-                    <option value="有→枝・幹">有→枝・幹</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">風衝害の危険</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRiskWind">
-                    <option value="無" selected>無</option>
-                    <option value="有">有</option>
-                  </select>
-                </div>
-                <div class="form-group flex flex-col gap-1">
-                  <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">隣接樹木の被圧</label>
-                  <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRiskSuppression">
-                    <option value="無" selected>無</option>
-                    <option value="有">有</option>
+                    <option value="2.5m未満">2.5m未満</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group flex flex-col gap-1">
-                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputOtherSurroundings">その他周辺状況</label>
-                <input type="text" placeholder="周辺施設の近接状況など" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputOtherSurroundings" />
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide">視認・照明阻害 (信号・標識・街灯)</label>
+                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectObstruction">
+                  <option value="無" selected>無</option>
+                  <option value="有">有</option>
+                </select>
+              </div>
+
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="inputOtherSurroundings">周辺状況</label>
+                <input type="text" placeholder="電線の近接、周辺施設の近接状況など" class="input-field h-9 px-3 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="inputOtherSurroundings" />
               </div>
             </div>
 
             <!-- STEP 6: 被害状況・処置・登録 -->
             <div class="wizard-step-page hidden space-y-4" id="stepPage-6">
-              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 被害総合判定・推奨処置</h3>
+              <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-1">◆ 総合評価・推奨処置</h3>
 
-              <!-- Table UI for Evaluation of each part -->
-              <div class="overflow-x-auto border border-slate-850 rounded-xl bg-slate-950/60 p-2.5 space-y-3">
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">部位別評価と判定</div>
-                
-                <div class="flex flex-col gap-3 text-[11px]">
-                  <!-- Row: Branch -->
-                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
-                      <span>枝 (Branches)</span>
-                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">被害:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchDamage">
-                          <option value="無" selected>無</option>
-                          <option value="小">小</option>
-                          <option value="中">中</option>
-                          <option value="大">大</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">緊急:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchUrgency">
-                          <option value="無" selected>無</option>
-                          <option value="低">低</option>
-                          <option value="中">中</option>
-                          <option value="高">高</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">危険:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchRisk">
-                          <option value="I" selected>I</option>
-                          <option value="II">II</option>
-                          <option value="III">III</option>
-                          <option value="IV">IV</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">処置:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalBranchAction">
-                          <option value="剪定">剪定</option>
-                          <option value="伐採">伐採</option>
-                          <option value="詳細診断">詳細診断</option>
-                          <option value="短期観察" selected>短期観察</option>
-                          <option value="その他">その他</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Row: Trunk -->
-                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
-                      <span>幹 (Trunk)</span>
-                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">被害:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkDamage">
-                          <option value="無" selected>無</option>
-                          <option value="小">小</option>
-                          <option value="中">中</option>
-                          <option value="大">大</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">緊急:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkUrgency">
-                          <option value="無" selected>無</option>
-                          <option value="低">低</option>
-                          <option value="中">中</option>
-                          <option value="高">高</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">危険:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkRisk">
-                          <option value="I" selected>I</option>
-                          <option value="II">II</option>
-                          <option value="III">III</option>
-                          <option value="IV">IV</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">処置:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrunkAction">
-                          <option value="剪定">剪定</option>
-                          <option value="伐採">伐採</option>
-                          <option value="詳細診断">詳細診断</option>
-                          <option value="短期観察" selected>短期観察</option>
-                          <option value="その他">その他</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Row: Root flare / root -->
-                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
-                      <span>根元・根 (Root Flare / Root)</span>
-                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">被害:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootDamage">
-                          <option value="無" selected>無</option>
-                          <option value="小">小</option>
-                          <option value="中">中</option>
-                          <option value="大">大</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">緊急:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootUrgency">
-                          <option value="無" selected>無</option>
-                          <option value="低">低</option>
-                          <option value="中">中</option>
-                          <option value="高">高</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">危険:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootRisk">
-                          <option value="I" selected>I</option>
-                          <option value="II">II</option>
-                          <option value="III">III</option>
-                          <option value="IV">IV</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">処置:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalRootAction">
-                          <option value="剪定">剪定</option>
-                          <option value="伐採">伐採</option>
-                          <option value="詳細診断">詳細診断</option>
-                          <option value="短期観察" selected>短期観察</option>
-                          <option value="その他">その他</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Row: Traffic -->
-                  <div class="border-b border-slate-855 pb-2.5 last:border-b-0 space-y-2">
-                    <div class="flex justify-between items-center text-xs font-bold text-slate-300">
-                      <span>交通障害 (Traffic obstruction)</span>
-                      <span class="text-[10px] text-brand bg-slate-900 border border-slate-800 px-2 py-0.5 rounded">判定対象</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">被害:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficDamage">
-                          <option value="無" selected>無</option>
-                          <option value="小">小</option>
-                          <option value="中">中</option>
-                          <option value="大">大</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">緊急:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficUrgency">
-                          <option value="無" selected>無</option>
-                          <option value="低">低</option>
-                          <option value="中">中</option>
-                          <option value="高">高</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">危険:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficRisk">
-                          <option value="I" selected>I</option>
-                          <option value="II">II</option>
-                          <option value="III">III</option>
-                          <option value="IV">IV</option>
-                        </select>
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <span class="text-slate-400">処置:</span>
-                        <select class="flex-1 h-7 px-1.5 bg-slate-900 border border-slate-800 rounded text-xs text-slate-200 focus:border-brand outline-none" id="evalTrafficAction">
-                          <option value="剪定">剪定</option>
-                          <option value="伐採">伐採</option>
-                          <option value="詳細診断">詳細診断</option>
-                          <option value="短期観察" selected>短期観察</option>
-                          <option value="その他">その他</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectRisk">総合危険度ランク</label>
+                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs font-bold text-brand focus:border-brand outline-none" id="selectRisk" required>
+                  <option value="I" selected>RANK I: 被害無〜小 (健全)</option>
+                  <option value="II">RANK II: 被害中 (注意点検)</option>
+                  <option value="III">RANK III: 倒伏危険性低 (要処置)</option>
+                  <option value="IV">RANK IV: 倒伏危険性高 (緊急処置)</option>
+                </select>
               </div>
 
-              <!-- Notes area -->
+              <div class="form-group flex flex-col gap-1">
+                <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="selectRecommendedAction">推奨する処置</label>
+                <select class="input-field h-9 px-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none" id="selectRecommendedAction" required>
+                  <option value="短期観察" selected>短期観察</option>
+                  <option value="剪定">剪定</option>
+                  <option value="詳細診断">詳細診断</option>
+                  <option value="伐採">伐採</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+
               <div class="form-group flex flex-col gap-1">
                 <label class="form-label text-[10px] text-slate-400 font-bold uppercase tracking-wide" for="textareaActionNotes">処置の留意点・想定される影響等</label>
-                <textarea placeholder="倒伏防止用の支柱、剪定時の注意点など" class="w-full h-20 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaActionNotes"></textarea>
+                <textarea placeholder="倒伏防止用の支柱、剪定時の注意点など" class="w-full h-24 p-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:border-brand outline-none custom-scrollbar resize-none" id="textareaActionNotes"></textarea>
               </div>
             </div>
 
             <!-- Wizard Navigation Buttons -->
             <div class="flex items-center gap-3 pt-2">
-              <button type="button" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-750 text-slate-200 font-semibold rounded-xl text-xs transition-all active:scale-[0.98] hidden" id="prevStepBtn">
+              <button type="button" class="flex-1 py-2.5 bg-slate-850 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold rounded-xl text-xs transition-all active:scale-[0.98] hidden" id="prevStepBtn">
                 前のステップへ
               </button>
               <button type="button" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10" id="nextStepBtn">
                 次のステップへ
               </button>
               <button type="submit" class="flex-1 py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs transition-all active:scale-[0.98] shadow-lg shadow-brand/10 hidden" id="submitBtn">
-                点検カルテを作成
+                点検カルテを登録
               </button>
             </div>
 
           </form>
-        </div>
-
-        <!-- ==========================================
-             VIEW 4: REGISTER SUCCESS SUMMARY (SPA 2-TAB)
-             ========================================== -->
-        <div class="panel-view hidden flex flex-col gap-5" id="summary-view">
-          <div class="flex flex-col items-center justify-center text-center p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl gap-2">
-            <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-brand flex items-center justify-center text-brand">
-              <i data-lucide="check-circle" class="w-5 h-5"></i>
-            </div>
-            <h2 class="text-sm font-bold text-slate-100">点検カルテの作成が完了しました</h2>
-            <p class="text-[10px] text-slate-400">データはローカルステートへ正常に保存されました。</p>
-          </div>
-
-          <!-- Tabs Header -->
-          <div class="flex border-b border-slate-800 text-xs font-semibold">
-            <button type="button" class="flex-1 py-2 text-brand border-b-2 border-brand" id="successTabBtnSummary">1枚目: 基本 & サマリー</button>
-            <button type="button" class="flex-1 py-2 text-slate-400 hover:text-slate-200" id="successTabBtnPhotos">2枚目: 写真 & AI診断</button>
-          </div>
-
-          <!-- Tab Content 1: Summary -->
-          <div id="successTabContentSummary" class="space-y-4">
-            <!-- Registered Info Card -->
-            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">基本データ</h3>
-              <div class="grid grid-cols-2 gap-3 text-xs">
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">樹木番号</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successTreeNum">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">樹種名</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successSpecies">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5 col-span-2">
-                  <div class="text-[10px] text-slate-400 font-semibold">位置情報 (緯度, 経度)</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successLatLng">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">樹高 (H)</div>
-                  <div class="font-bold text-slate-200 mt-0.5"><span id="successHeight">-</span> m</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">幹周 (C)</div>
-                  <div class="font-bold text-slate-200 mt-0.5"><span id="successCirc">-</span> cm</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">樹勢</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successVigor">-</div>
-                </div>
-                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                  <div class="text-[10px] text-slate-400 font-semibold">樹形</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successShape">-</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Risk Status Card -->
-            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">総合危険度と推奨処置</h3>
-              <div class="flex justify-between items-center bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
-                <div>
-                  <div class="text-[10px] text-slate-400 font-semibold">総合危険度ランク</div>
-                  <div class="font-bold text-slate-200 mt-0.5" id="successRiskLabel">-</div>
-                </div>
-                <span class="text-xs px-2.5 py-1 font-bold rounded-lg border" id="successRiskBadge">RANK I</span>
-              </div>
-              
-              <!-- Recommendations by Part -->
-              <div class="overflow-hidden border border-slate-800 rounded-lg text-[10px] bg-slate-900/30">
-                <table class="w-full text-left border-collapse">
-                  <thead>
-                    <tr class="bg-slate-900 border-b border-slate-800 text-slate-400 font-semibold">
-                      <th class="p-2">部位</th>
-                      <th class="p-2">危険度</th>
-                      <th class="p-2">推奨処置</th>
-                    </tr>
-                  </thead>
-                  <tbody id="successPartTreatmentTable">
-                    <!-- Rows populated dynamically -->
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Notes -->
-              <div class="bg-slate-900/40 border border-slate-800 p-2.5 rounded-lg text-xs space-y-1">
-                <div class="text-[10px] text-slate-400 font-semibold">処置の留意点:</div>
-                <p class="text-slate-300 text-[11px] leading-relaxed whitespace-pre-wrap" id="successActionNotes">-</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tab Content 2: Photos & AI Diagnosis -->
-          <div id="successTabContentPhotos" class="hidden space-y-4">
-            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4 space-y-3">
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">登録写真とAI判定結果</h3>
-              <div class="flex flex-col gap-3" id="successPhotosGrid">
-                <!-- Dynamically populated photos and AI texts -->
-              </div>
-            </div>
-
-            <!-- AI Engine System Logs -->
-            <div class="bg-slate-955/40 border border-slate-855 rounded-xl p-4 space-y-2">
-              <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand"></i>
-                AI推論エンジン ログ
-              </h3>
-              <div class="font-mono text-[9px] text-slate-300 bg-slate-950 p-3 rounded-lg border border-slate-855 space-y-1 max-h-32 overflow-y-auto custom-scrollbar" id="successAiLogs">
-                <!-- Logs populated dynamically -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Button -->
-          <button type="button" class="w-full py-2.5 bg-brand hover:bg-brand-hover text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-brand/10 transition-all active:scale-[0.98]" id="reloadBtn">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            新しい点検カルテを作成
-          </button>
         </div>
 
       </div>
@@ -1174,6 +754,196 @@
 
   </div>
 
+  <!-- CENTER MODAL: Tree details PDF-style Report -->
+  <div id="reportModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
+      
+      <!-- Close button -->
+      <button id="closeModalBtn" onclick="closeReportModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 p-2 hover:bg-slate-800 rounded-xl transition-all z-10">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="p-6 pb-4 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/30 text-brand rounded-xl">
+            <i data-lucide="file-text" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-100">街路樹健全度診断報告書</h2>
+            <p class="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">Street Tree Health Inspection Ledger</p>
+          </div>
+        </div>
+        <!-- Printer button -->
+        <div class="flex items-center gap-3 pr-8">
+          <button onclick="window.print()" class="print-btn flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-semibold text-slate-200 transition-all">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            印刷用PDF出力
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab selection -->
+      <div class="px-6 tab-header-wrapper flex border-b border-slate-800 text-xs font-semibold bg-slate-950/20">
+        <button id="modalTabBtnReport" onclick="switchModalTab('report')" class="flex-1 pb-3 text-center border-b-2 font-bold text-sm text-brand border-brand">点検カルテ</button>
+        <button id="modalTabBtnGallery" onclick="switchModalTab('gallery')" class="flex-1 pb-3 text-center border-b font-semibold text-sm text-slate-400 border-slate-800 hover:text-slate-200">写真台帳・AI診断</button>
+      </div>
+
+      <!-- Modal Scroll Container -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+        
+        <!-- Tab Content 1: Official Card Table -->
+        <div id="modalReportTabContent" class="space-y-6">
+          <div class="border border-slate-700 bg-slate-950/40 rounded-xl overflow-hidden">
+            <!-- Official Card Grid -->
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹木点検管理ID</div>
+              <div class="p-3 border-r border-slate-700 font-bold text-slate-200" id="repId">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹木番号</div>
+              <div class="p-3 font-bold text-slate-200" id="repTreeNum">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹種名</div>
+              <div class="p-3 border-r border-slate-700 font-bold text-slate-200" id="repSpecies">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">位置情報 (緯度, 経度)</div>
+              <div class="p-3 text-slate-200" id="repLatLng">-</div>
+            </div>
+            <div class="grid grid-cols-6 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹高 (m)</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repHeight">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">幹周 (cm)</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repCirc">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">枝張り (m)</div>
+              <div class="p-3 text-slate-200" id="repCrown">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹勢 (健全度)</div>
+              <div class="p-3 border-r border-slate-700 font-bold" id="repVigor">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹形</div>
+              <div class="p-3 text-slate-200" id="repShape">-</div>
+            </div>
+
+            <!-- Section header: Branch -->
+            <div class="bg-slate-900 px-3 py-2 text-xs font-bold text-emerald-400 border-b border-slate-700 uppercase tracking-wide">枝の異常所見</div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">発生位置 (m)</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repBranchPos">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">枯れ枝・ぶら下がり</div>
+              <div class="p-3 text-slate-200 font-semibold" id="repBranchDead">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">枝の異常</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repBranchAnomaly">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">大枝分岐部の異常</div>
+              <div class="p-3 text-slate-200 font-semibold" id="repBranchJunction">-</div>
+            </div>
+
+            <!-- Section header: Trunk -->
+            <div class="bg-slate-900 px-3 py-2 text-xs font-bold text-emerald-400 border-b border-slate-700 uppercase tracking-wide">幹の異常所見</div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">空洞の有無</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repTrunkCavity">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">腐朽の有無</div>
+              <div class="p-3 text-slate-200" id="repTrunkDecay">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">鋼棒貫入</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repTrunkPenetration">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹皮の欠損</div>
+              <div class="p-3 text-slate-200" id="repTrunkBarkLoss">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">打診音の異常</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repTrunkPercussion">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">衰退・枯死要因</div>
+              <div class="p-3 text-slate-200" id="repTrunkDecline">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">その他幹の異常</div>
+              <div class="col-span-3 p-3 text-slate-200 whitespace-pre-wrap" id="repTrunkOther">-</div>
+            </div>
+
+            <!-- Section header: Root -->
+            <div class="bg-slate-900 px-3 py-2 text-xs font-bold text-emerald-400 border-b border-slate-700 uppercase tracking-wide">根元・根の異常所見</div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">空洞の有無</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repRootCavity">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">腐朽の有無</div>
+              <div class="p-3 text-slate-200" id="repRootDecay">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">鋼棒貫入</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repRootPenetration">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹皮の欠損</div>
+              <div class="p-3 text-slate-200" id="repRootBarkLoss">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">打診音の異常</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repRootPercussion">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">ガードリングルート</div>
+              <div class="p-3 text-slate-200 font-semibold" id="repRootGirdling">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">露出根の被害</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repRootExposed">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">衰退・枯死要因</div>
+              <div class="p-3 text-slate-200" id="repRootDecline">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">その他根の異常</div>
+              <div class="col-span-3 p-3 text-slate-200 whitespace-pre-wrap" id="repRootOther">-</div>
+            </div>
+
+            <!-- Section header: Traffic & Surroundings -->
+            <div class="bg-slate-900 px-3 py-2 text-xs font-bold text-emerald-400 border-b border-slate-700 uppercase tracking-wide">交通障害・周辺状況</div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹体の揺れ</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200 font-semibold" id="repSway">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">樹体の傾斜</div>
+              <div class="p-3 text-slate-200 font-semibold" id="repLean">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">建築限界 (車道部)</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repClearanceRoadway">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">建築限界 (歩道部)</div>
+              <div class="p-3 text-slate-200" id="repClearanceSidewalk">-</div>
+            </div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">視認・照明阻害</div>
+              <div class="p-3 border-r border-slate-700 text-slate-200" id="repObstruction">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">その他周辺状況</div>
+              <div class="p-3 text-slate-200" id="repOtherSurroundings">-</div>
+            </div>
+
+            <!-- Section header: General Evaluation & Action -->
+            <div class="bg-slate-900 px-3 py-2 text-xs font-bold text-emerald-400 border-b border-slate-700 uppercase tracking-wide">総合判定および推奨処置</div>
+            <div class="grid grid-cols-4 border-b border-slate-700 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">総合危険度ランク</div>
+              <div class="p-3 border-r border-slate-700 font-bold animate-pulse" id="repRisk">-</div>
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">推奨処置</div>
+              <div class="p-3 font-bold text-brand" id="repRecommendedAction">-</div>
+            </div>
+            <div class="grid grid-cols-4 text-xs">
+              <div class="p-3 border-r border-slate-700 bg-slate-900/50 font-bold text-slate-400">処置の留意点・想定影響</div>
+              <div class="col-span-3 p-3 text-slate-200 whitespace-pre-wrap" id="repActionNotes">-</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab Content 2: Photos Ledger -->
+        <div id="modalGalleryTabContent" class="hidden space-y-6">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">添付写真およびAI診断ログ履歴</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="repAiPhotoLogs">
+            <!-- Dynamic elements will be appended here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Leaflet JS CDN -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   
@@ -1182,7 +952,7 @@
        Mock Data & Application State
        ========================================================================== */
     const state = {
-      mode: 'summary', // 'summary', 'detail', 'register'
+      mode: 'summary', // 'summary', 'register'
       selectedTreeId: null,
       tempMarker: null,
       selectedLatLng: null,
@@ -1210,18 +980,16 @@
           trunkPenetration: '無',
           trunkBarkLoss: '無',
           trunkPercussion: '無',
-          trunkDecline: '無',
-          trunkDeclineOther: '',
+          trunkDecline: '',
+          trunkOtherAnomaly: '',
           trunkPestResult: null,
           trunkFruitingResult: null,
-          trunkOtherAnomaly: '',
           rootCavity: '無',
           rootDecay: '無',
           rootPenetration: '無',
           rootBarkLoss: '無',
           rootPercussion: '無',
-          rootDecline: '無',
-          rootDeclineOther: '',
+          rootDecline: '',
           rootGirdling: '無',
           rootExposed: '',
           rootPestResult: null,
@@ -1231,15 +999,10 @@
           lean: '無',
           clearanceRoadway: '4.5m以上',
           clearanceSidewalk: '2.5m以上',
-          obstructionVisibility: '無',
-          obstructionLight: '無',
-          riskWind: '無',
-          riskSuppression: '無',
+          obstruction: '無',
           otherSurroundings: '',
-          evalBranch: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalTrunk: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalRoot: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalTraffic: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
+          risk: 'I',
+          recommendedAction: '短期観察',
           actionNotes: '定期点検の観察を継続します。'
         },
         {
@@ -1259,23 +1022,19 @@
           branchAnomaly: '無',
           branchJunctionAnomaly: '有',
           branchPestResult: { name: 'サビ病', rate: '88%', photo: 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23334155"/><text x="50" y="55" font-size="10" fill="%2394a3b8" text-anchor="middle">サンプル画像</text></svg>' },
-          trunkCavity: '有（芯未達）',
+          trunkCavity: '芯未達',
           trunkDecay: '有',
           trunkPenetration: '無',
           trunkBarkLoss: '有',
           trunkPercussion: '有',
-          trunkDecline: '無',
-          trunkDeclineOther: '',
-          trunkPestResult: null,
-          trunkFruitingResult: null,
-          trunkOtherAnomaly: '主幹にひび割れあり。',
+          trunkDecline: '樹皮損傷',
+          trunkOtherAnomaly: '主幹に巻き込み不良あり。',
           rootCavity: '無',
           rootDecay: '無',
           rootPenetration: '無',
           rootBarkLoss: '無',
           rootPercussion: '無',
-          rootDecline: '無',
-          rootDeclineOther: '',
+          rootDecline: '',
           rootGirdling: '無',
           rootExposed: '',
           rootPestResult: null,
@@ -1284,17 +1043,12 @@
           sway: '無',
           lean: '小',
           clearanceRoadway: '4.5m以上',
-          clearanceSidewalk: '2.5m未満→枝・幹',
-          obstructionVisibility: '無',
-          obstructionLight: '無',
-          riskWind: '無',
-          riskSuppression: '無',
-          otherSurroundings: '',
-          evalBranch: { damage: '小', urgency: '低', risk: 'II', action: '剪定' },
-          evalTrunk: { damage: '小', urgency: '低', risk: 'II', action: '短期観察' },
-          evalRoot: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalTraffic: { damage: '小', urgency: '低', risk: 'II', action: '剪定' },
-          actionNotes: '歩道側の飛び出し枝の剪定および主幹腐朽部の軽度の殺菌清掃。'
+          clearanceSidewalk: '2.5m未満',
+          obstruction: '有',
+          otherSurroundings: '歩道へ枝張り飛び出し。',
+          risk: 'II',
+          recommendedAction: '剪定',
+          actionNotes: '歩道側の飛び出し枝の剪定および主幹腐朽部の軽度の清掃。'
         },
         {
           id: 'TR-003',
@@ -1318,36 +1072,29 @@
           trunkPenetration: '無',
           trunkBarkLoss: '無',
           trunkPercussion: '無',
-          trunkDecline: '無',
-          trunkDeclineOther: '',
+          trunkDecline: '',
+          trunkOtherAnomaly: '',
           trunkPestResult: null,
           trunkFruitingResult: null,
-          trunkOtherAnomaly: '',
-          rootCavity: '有（芯達）',
+          rootCavity: '芯達',
           rootDecay: '有',
-          rootPenetration: '有（芯達）',
+          rootPenetration: '達',
           rootBarkLoss: '有',
           rootPercussion: '有',
-          rootDecline: 'その他',
-          rootDeclineOther: '根系腐朽による支持力低下',
-          rootGirdling: '有（1/2以上）',
+          rootDecline: '根系腐朽による支持力低下',
+          rootGirdling: '半分以上',
           rootExposed: '舗装アスファルトの持ち上げ、露出根の破断。',
           rootPestResult: null,
           rootFruitingResult: { name: 'ベッコウタケ', rate: '93%', photo: 'data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23334155"/><text x="50" y="55" font-size="10" fill="%2394a3b8" text-anchor="middle">きのこ群生画像</text></svg>' },
           rootOtherAnomaly: '根元付近に複数の子実体が群生している。',
           sway: '大',
           lean: '中',
-          clearanceRoadway: '4.5m未満→枝・幹',
+          clearanceRoadway: '4.5m未満',
           clearanceSidewalk: '2.5m以上',
-          obstructionVisibility: '有→枝・幹',
-          obstructionLight: '有→枝・幹',
-          riskWind: '有',
-          riskSuppression: '有',
-          otherSurroundings: '隣接する電線との接触の恐れあり。',
-          evalBranch: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalTrunk: { damage: '無', urgency: '無', risk: 'I', action: '短期観察' },
-          evalRoot: { damage: '大', urgency: '高', risk: 'IV', action: '伐採' },
-          evalTraffic: { damage: '中', urgency: '中', risk: 'III', action: '剪定' },
+          obstruction: '有',
+          otherSurroundings: '電線近接。',
+          risk: 'IV',
+          recommendedAction: '伐採',
           actionNotes: 'ベッコウタケの子実体が群生しており、空洞も芯達のため倒伏危険性が極めて高い。速やかな伐採を強く推奨。'
         }
       ]
@@ -1359,13 +1106,6 @@
       3: '3:少し悪い',
       4: '4:悪い',
       5: '5:枯死'
-    };
-
-    const riskLabels = {
-      'I': 'I: 被害無〜小',
-      'II': 'II: 被害中',
-      'III': 'III: 倒伏危険性低',
-      'IV': 'IV: 倒伏危険性高'
     };
 
     const aiMockResults = {
@@ -1396,70 +1136,16 @@
       overallPhoto: null
     };
 
-    // Active detail view state
-    let activeDetailTab = 'summary'; // 'summary' or 'ai'
-
     /* ==========================================================================
        DOM Elements
        ========================================================================== */
     const summaryView = document.getElementById('summaryView');
-    const detailView = document.getElementById('detailView');
     const registerView = document.getElementById('registerView');
     
     const triggerRegisterBtn = document.getElementById('triggerRegisterBtn');
-    const backToSummaryBtn = document.getElementById('backToSummaryBtn');
     const cancelRegisterBtn = document.getElementById('cancelRegisterBtn');
     const submitBtn = document.getElementById('submitBtn');
-    
     const treeListContainer = document.getElementById('treeList');
-    
-    // Tab Elements
-    const tabBtnSummary = document.getElementById('tabBtnSummary');
-    const tabBtnAi = document.getElementById('tabBtnAi');
-    const tabContentSummary = document.getElementById('tabContentSummary');
-    const tabContentAi = document.getElementById('tabContentAi');
-
-    // Details Elements
-    const detailTreePhoto = document.getElementById('detailTreePhoto');
-    const detailTreeFallbackGraphic = document.getElementById('detailTreeFallbackGraphic');
-    const detailTreeName = document.getElementById('detailTreeName');
-    const detailTreeId = document.getElementById('detailTreeId');
-    const detailTreeNum = document.getElementById('detailTreeNum');
-    const detailRiskBadge = document.getElementById('detailRiskBadge');
-    const detailTreeHeight = document.getElementById('detailTreeHeight');
-    const detailTreeCirc = document.getElementById('detailTreeCirc');
-    const detailTreeCrown = document.getElementById('detailTreeCrown');
-    const detailTreeVigor = document.getElementById('detailTreeVigor');
-    const detailTreeShape = document.getElementById('detailTreeShape');
-    const detailTreeLatLng = document.getElementById('detailTreeLatLng');
-    const detailAnomaliesTags = document.getElementById('detailAnomaliesTags');
-    const detailTreatmentTableBody = document.getElementById('detailTreatmentTableBody');
-    const detailActionNotes = document.getElementById('detailActionNotes');
-    const detailAiImageGrid = document.getElementById('detailAiImageGrid');
-
-    // Register Success Elements
-    const summaryResultView = document.getElementById('summary-view');
-    const successTreeNum = document.getElementById('successTreeNum');
-    const successSpecies = document.getElementById('successSpecies');
-    const successRiskLabel = document.getElementById('successRiskLabel');
-    const successRiskBadge = document.getElementById('successRiskBadge');
-    const successAiLogs = document.getElementById('successAiLogs');
-    const reloadBtn = document.getElementById('reloadBtn');
-
-    // Register Success 2-Tab Elements
-    const successTabBtnSummary = document.getElementById('successTabBtnSummary');
-    const successTabBtnPhotos = document.getElementById('successTabBtnPhotos');
-    const successTabContentSummary = document.getElementById('successTabContentSummary');
-    const successTabContentPhotos = document.getElementById('successTabContentPhotos');
-
-    const successLatLng = document.getElementById('successLatLng');
-    const successHeight = document.getElementById('successHeight');
-    const successCirc = document.getElementById('successCirc');
-    const successVigor = document.getElementById('successVigor');
-    const successShape = document.getElementById('successShape');
-    const successPartTreatmentTable = document.getElementById('successPartTreatmentTable');
-    const successActionNotes = document.getElementById('successActionNotes');
-    const successPhotosGrid = document.getElementById('successPhotosGrid');
 
     // Wizard Navigation Elements
     const prevStepBtn = document.getElementById('prevStepBtn');
@@ -1503,11 +1189,6 @@
           state.tempMarker = L.marker(e.latlng, { icon: tempIcon }).addTo(map);
         }
       });
-
-      // Ensure Leaflet recalculates layout boundaries after rendering
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 250);
     }
 
     function createCustomMarkerIcon(riskClass) {
@@ -1528,33 +1209,29 @@
       const crownText = tree.crown ? `${tree.crown.toFixed(1)} m` : '-';
       const heightText = tree.height ? `${tree.height.toFixed(1)} m` : '-';
       const circText = tree.circ ? `${tree.circ} cm` : '-';
-      const latText = tree.lat.toFixed(5);
-      const lngText = tree.lng.toFixed(5);
       
-      const riskBadgeClass = 'badge-' + tree.risk.toLowerCase();
+      let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
+      if (tree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      if (tree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+      if (tree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
 
       return `
-        <div class="custom-popup-content">
-          <div class="popup-content-title">
-            <span class="font-bold">${tree.species}</span>
-            <span class="risk-badge ${riskBadgeClass}">RANK ${tree.risk}</span>
+        <div class="custom-popup-content space-y-2">
+          <div class="flex items-center justify-between gap-3 border-b border-slate-800 pb-1.5">
+            <span class="font-bold text-xs text-slate-100">${tree.species} (${treeNumText})</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${badgeColorClass}">RANK ${tree.risk}</span>
           </div>
-          <div class="popup-content-grid">
-            <span class="popup-content-label">樹木番号</span>
-            <span class="popup-content-value">${treeNumText}</span>
-            
-            <span class="popup-content-label">樹高 / 幹周</span>
-            <span class="popup-content-value">${heightText} / ${circText}</span>
-            
-            <span class="popup-content-label">枝張り</span>
-            <span class="popup-content-value">${crownText}</span>
-            
-            <span class="popup-content-label">樹勢</span>
-            <span class="popup-content-value vigor-text vigor-${tree.vigor}">${vigorText}</span>
-            
-            <span class="popup-content-label">座標</span>
-            <span class="popup-content-value" style="font-size: 9px;">${latText}, ${lngText}</span>
+          <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-slate-350">
+            <span class="text-slate-500">樹高/幹周:</span>
+            <span>${heightText} / ${circText}</span>
+            <span class="text-slate-500">枝張り:</span>
+            <span>${crownText}</span>
+            <span class="text-slate-500">樹勢:</span>
+            <span>${vigorText}</span>
           </div>
+          <button onclick="openReportModal('${tree.id}')" class="w-full mt-2 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-[10px] transition-all text-center">
+            カルテ詳細 (PDF風) を開く
+          </button>
         </div>
       `;
     }
@@ -1584,7 +1261,6 @@
         marker.bindPopup(popup);
 
         marker.on('click', () => {
-          selectTree(tree.id);
           const offsetLng = window.innerWidth > 768 ? -0.001 : 0;
           map.setView([tree.lat, tree.lng + offsetLng], 17, { animate: true, duration: 0.6 });
         });
@@ -1598,16 +1274,14 @@
       state.mode = newMode;
       
       summaryView.classList.add('hidden');
-      detailView.classList.add('hidden');
       registerView.classList.add('hidden');
-      summaryResultView.classList.add('hidden');
 
       Object.keys(markers).forEach(id => {
         const el = markers[id].getElement();
         if (el) el.classList.remove('active');
       });
 
-      if (newMode !== 'register' && newMode !== 'summary_result' && state.tempMarker) {
+      if (newMode !== 'register' && state.tempMarker) {
         map.removeLayer(state.tempMarker);
         state.tempMarker = null;
         state.selectedLatLng = null;
@@ -1620,16 +1294,12 @@
         summaryView.classList.remove('hidden');
         populateTreeList();
         calculateStats();
-      } else if (newMode === 'detail') {
-        detailView.classList.remove('hidden');
       } else if (newMode === 'register') {
         registerView.classList.remove('hidden');
         wizardCurrentStep = 1;
         formState = { aiResults: {}, overallPhoto: null };
         resetFormElements();
         showWizardStep(1);
-      } else if (newMode === 'summary_result') {
-        summaryResultView.classList.remove('hidden');
       }
     }
 
@@ -1643,7 +1313,6 @@
         item.className = 'tree-item bg-slate-800 border border-slate-700/60 rounded-xl p-3 flex justify-between items-center cursor-pointer hover:translate-x-1 hover:border-brand hover:bg-slate-700/40 transition-all';
         item.dataset.id = tree.id;
         
-        // Define color scheme classes matching the risk rank
         let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
         if (tree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
         if (tree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
@@ -1658,7 +1327,7 @@
         `;
 
         item.addEventListener('click', () => {
-          selectTree(tree.id);
+          openReportModal(tree.id);
           const offsetLng = window.innerWidth > 768 ? -0.001 : 0;
           map.setView([tree.lat, tree.lng + offsetLng], 17, { animate: true, duration: 0.6 });
         });
@@ -1678,144 +1347,142 @@
     }
 
     /* ==========================================================================
-       Detail Mode: Fill fields, Tab switching & Render
+       PDF風 Report Modal control
        ========================================================================== */
-    function selectTree(treeId) {
-      state.selectedTreeId = treeId;
+    function openReportModal(treeId) {
       const tree = state.trees.find(t => t.id === treeId);
       if (!tree) return;
 
-      switchMode('detail');
+      state.selectedTreeId = treeId;
 
-      const marker = markers[treeId];
-      if (marker) {
-        const el = marker.getElement();
-        if (el) el.classList.add('active');
-        marker.openPopup();
-      }
-
-      // Populate details
-      detailTreeId.innerText = tree.id;
-      detailTreeName.innerText = `${tree.species}`;
-      detailTreeHeight.innerText = tree.height ? tree.height.toFixed(1) : '-';
-      detailTreeCirc.innerText = tree.circ || '-';
-      detailTreeCrown.innerText = tree.crown ? tree.crown.toFixed(1) : '-';
-      detailTreeNum.innerText = tree.treeNum || '-';
-      detailTreeLatLng.innerText = `${tree.lat.toFixed(6)}, ${tree.lng.toFixed(6)}`;
+      // Fill in report modal details
+      document.getElementById('repId').innerText = tree.id;
+      document.getElementById('repTreeNum').innerText = tree.treeNum;
+      document.getElementById('repSpecies').innerText = tree.species;
+      document.getElementById('repHeight').innerText = tree.height ? tree.height.toFixed(1) : '-';
+      document.getElementById('repCirc').innerText = tree.circ || '-';
+      document.getElementById('repCrown').innerText = tree.crown ? tree.crown.toFixed(1) : '-';
       
-      detailTreeVigor.innerText = vigorLabels[tree.vigor] || '-';
-      detailTreeVigor.className = 'font-bold mt-0.5 vigor-text vigor-' + tree.vigor;
-      detailTreeShape.innerText = vigorLabels[tree.shape] || '-';
+      const vigorText = vigorLabels[tree.vigor] || '-';
+      const shapeText = vigorLabels[tree.shape] || '-';
+      
+      const repVigor = document.getElementById('repVigor');
+      repVigor.innerText = vigorText;
+      repVigor.className = 'p-3 border-r border-slate-700 font-bold vigor-text vigor-' + tree.vigor;
+      
+      document.getElementById('repShape').innerText = shapeText;
+      document.getElementById('repLatLng').innerText = `${tree.lat.toFixed(6)}, ${tree.lng.toFixed(6)}`;
 
-      // Risk class mapping
-      let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
-      if (tree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      if (tree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
-      if (tree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
-      detailRiskBadge.className = `risk-badge text-xs px-2.5 py-1 font-bold rounded-lg border ${badgeColorClass}`;
-      detailRiskBadge.innerText = 'RANK ' + tree.risk;
+      // Page 2
+      document.getElementById('repBranchPos').innerText = tree.branchPosition ? `${tree.branchPosition.toFixed(1)} m` : '-';
+      document.getElementById('repBranchDead').innerText = tree.branchDead;
+      document.getElementById('repBranchAnomaly').innerText = tree.branchAnomaly;
+      document.getElementById('repBranchJunction').innerText = tree.branchJunctionAnomaly;
 
-      // Photo rendering (Fallback check)
+      // Page 3
+      document.getElementById('repTrunkCavity').innerText = tree.trunkCavity;
+      document.getElementById('repTrunkDecay').innerText = tree.trunkDecay;
+      document.getElementById('repTrunkPenetration').innerText = tree.trunkPenetration;
+      document.getElementById('repTrunkBarkLoss').innerText = tree.trunkBarkLoss;
+      document.getElementById('repTrunkPercussion').innerText = tree.trunkPercussion;
+      document.getElementById('repTrunkDecline').innerText = tree.trunkDecline || '無';
+      document.getElementById('repTrunkOther').innerText = tree.trunkOtherAnomaly || '(特記なし)';
+
+      // Page 4
+      document.getElementById('repRootCavity').innerText = tree.rootCavity;
+      document.getElementById('repRootDecay').innerText = tree.rootDecay;
+      document.getElementById('repRootPenetration').innerText = tree.rootPenetration;
+      document.getElementById('repRootBarkLoss').innerText = tree.rootBarkLoss;
+      document.getElementById('repRootPercussion').innerText = tree.rootPercussion;
+      document.getElementById('repRootGirdling').innerText = tree.rootGirdling;
+      document.getElementById('repRootExposed').innerText = tree.rootExposed || '(特記なし)';
+      document.getElementById('repRootDecline').innerText = tree.rootDecline || '無';
+      document.getElementById('repRootOther').innerText = tree.rootOtherAnomaly || '(特記なし)';
+
+      // Page 5
+      document.getElementById('repSway').innerText = tree.sway;
+      document.getElementById('repLean').innerText = tree.lean;
+      document.getElementById('repClearanceRoadway').innerText = tree.clearanceRoadway;
+      document.getElementById('repClearanceSidewalk').innerText = tree.clearanceSidewalk;
+      document.getElementById('repObstruction').innerText = tree.obstruction;
+      document.getElementById('repOtherSurroundings').innerText = tree.otherSurroundings || '(特記なし)';
+
+      // Page 6 / General
+      const repRisk = document.getElementById('repRisk');
+      repRisk.innerText = `RANK ${tree.risk}`;
+      
+      let riskColorClass = 'text-brand';
+      if (tree.risk === 'II') riskColorClass = 'text-amber-400';
+      if (tree.risk === 'III') riskColorClass = 'text-orange-400';
+      if (tree.risk === 'IV') riskColorClass = 'text-red-400';
+      repRisk.className = `p-3 border-r border-slate-700 font-bold ${riskColorClass}`;
+
+      document.getElementById('repRecommendedAction').innerText = tree.recommendedAction;
+      document.getElementById('repActionNotes').innerText = tree.actionNotes || '(特記なし)';
+
+      // Render AI logs & photos
+      renderModalPhotosTab(tree);
+
+      // Switch to default Report Tab
+      switchModalTab('report');
+
+      // Display Modal
+      document.getElementById('reportModal').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.add('hidden');
+    }
+
+    function switchModalTab(tabName) {
+      const btnReport = document.getElementById('modalTabBtnReport');
+      const btnGallery = document.getElementById('modalTabBtnGallery');
+      const contentReport = document.getElementById('modalReportTabContent');
+      const contentGallery = document.getElementById('modalGalleryTabContent');
+
+      if (tabName === 'report') {
+        btnReport.className = 'flex-1 pb-3 text-center border-b-2 font-bold text-sm text-brand border-brand';
+        btnGallery.className = 'flex-1 pb-3 text-center border-b font-semibold text-sm text-slate-400 border-slate-800 hover:text-slate-200';
+        contentReport.classList.remove('hidden');
+        contentGallery.classList.add('hidden');
+      } else {
+        btnReport.className = 'flex-1 pb-3 text-center border-b font-semibold text-sm text-slate-400 border-slate-800 hover:text-slate-200';
+        btnGallery.className = 'flex-1 pb-3 text-center border-b-2 font-bold text-sm text-brand border-brand';
+        contentReport.classList.add('hidden');
+        contentGallery.classList.remove('hidden');
+      }
+    }
+
+    function renderModalPhotosTab(tree) {
+      const container = document.getElementById('repAiPhotoLogs');
+      container.innerHTML = '';
+
+      // 1. Overall photo card
+      const overallCard = document.createElement('div');
+      overallCard.className = 'bg-slate-950/40 border border-slate-800 rounded-xl overflow-hidden shadow-lg';
       if (tree.photo) {
-        detailTreePhoto.src = tree.photo;
-        detailTreePhoto.classList.remove('hidden');
-        detailTreeFallbackGraphic.classList.add('hidden');
-      } else {
-        detailTreePhoto.classList.add('hidden');
-        detailTreeFallbackGraphic.classList.remove('hidden');
-      }
-
-      // Render tags for active anomalies
-      renderAnomaliesTags(tree);
-
-      // Render treatment table
-      renderTreatmentTable(tree);
-
-      // Notes
-      detailActionNotes.innerText = tree.actionNotes || '特記事項なし。';
-
-      // Render AI photos and diagnosis history
-      renderAiTabContent(tree);
-
-      // Switch to default Summary Tab
-      switchDetailTab('summary');
-    }
-
-    function renderAnomaliesTags(tree) {
-      detailAnomaliesTags.innerHTML = '';
-      
-      const tags = [];
-      
-      // Branch anomalies
-      if (tree.branchDead === '有') tags.push({ label: '枝: 枯死・ぶら下がり枝', type: 'warning' });
-      if (tree.branchAnomaly === '有') tags.push({ label: '枝: 樹皮/木質部異常', type: 'warning' });
-      if (tree.branchJunctionAnomaly === '有') tags.push({ label: '枝: 分岐部異常', type: 'warning' });
-      
-      // Trunk anomalies
-      if (tree.trunkCavity !== '無') tags.push({ label: `幹: 空洞 ${tree.trunkCavity}`, type: 'danger' });
-      if (tree.trunkDecay === '有') tags.push({ label: '幹: 腐朽有', type: 'danger' });
-      if (tree.trunkPenetration !== '無') tags.push({ label: `幹: 鋼棒貫入 ${tree.trunkPenetration}`, type: 'danger' });
-      if (tree.trunkBarkLoss === '有') tags.push({ label: '幹: 樹皮欠損', type: 'warning' });
-      if (tree.trunkPercussion === '有') tags.push({ label: '幹: 打診音異常', type: 'warning' });
-      
-      // Root anomalies
-      if (tree.rootCavity !== '無') tags.push({ label: `根: 空洞 ${tree.rootCavity}`, type: 'danger' });
-      if (tree.rootDecay === '有') tags.push({ label: '根: 腐朽有', type: 'danger' });
-      if (tree.rootGirdling !== '無') tags.push({ label: `根: ガードリングルート ${tree.rootGirdling}`, type: 'warning' });
-      if (tree.rootExposed) tags.push({ label: '根: 露出根被害あり', type: 'warning' });
-
-      // Traffic
-      if (tree.sway !== '無') tags.push({ label: `揺れ: ${tree.sway}`, type: 'warning' });
-      if (tree.lean !== '無') tags.push({ label: `傾斜: ${tree.lean}`, type: 'warning' });
-
-      if (tags.length === 0) {
-        detailAnomaliesTags.innerHTML = '<span class="text-xs text-slate-400 bg-slate-800/40 px-2 py-1 rounded-md border border-slate-700/60 font-semibold">特記すべき異常はありません</span>';
-      } else {
-        tags.forEach(tag => {
-          const tagEl = document.createElement('span');
-          const colorClass = tag.type === 'danger' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-          tagEl.className = `text-[10px] font-bold px-2 py-0.5 border rounded-lg ${colorClass}`;
-          tagEl.innerText = tag.label;
-          detailAnomaliesTags.appendChild(tagEl);
-        });
-      }
-    }
-
-    function renderTreatmentTable(tree) {
-      detailTreatmentTableBody.innerHTML = '';
-      
-      const parts = [
-        { name: '枝', eval: tree.evalBranch },
-        { name: '幹', eval: tree.evalTrunk },
-        { name: '根元・根', eval: tree.evalRoot },
-        { name: '交通障害', eval: tree.evalTraffic }
-      ];
-
-      parts.forEach(part => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-slate-850 hover:bg-slate-900/40 transition-colors';
-        
-        let riskColorClass = 'text-brand bg-brand/10 border-brand/20';
-        if (part.eval.risk === 'II') riskColorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-        if (part.eval.risk === 'III') riskColorClass = 'text-orange-400 bg-orange-500/10 border-orange-500/20';
-        if (part.eval.risk === 'IV') riskColorClass = 'text-red-400 bg-red-500/10 border-red-500/20';
-
-        row.innerHTML = `
-          <td class="p-2 font-bold text-slate-300">${part.name}</td>
-          <td class="p-2 text-slate-300">${part.eval.damage || '無'}</td>
-          <td class="p-2 text-slate-300">${part.eval.urgency || '無'}</td>
-          <td class="p-2">
-            <span class="px-1.5 py-0.5 rounded border text-[9px] font-bold ${riskColorClass} mr-1.5">${part.eval.risk}</span>
-            <span class="text-slate-200 font-medium">${part.eval.action || 'なし'}</span>
-          </td>
+        overallCard.innerHTML = `
+          <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+            <i data-lucide="image" class="w-4 h-4"></i>全景全体写真
+          </div>
+          <div class="h-48 bg-slate-950 flex items-center justify-center overflow-hidden">
+            <img src="${tree.photo}" alt="Overall" class="w-full h-full object-cover" />
+          </div>
         `;
-        detailTreatmentTableBody.appendChild(row);
-      });
-    }
+      } else {
+        overallCard.innerHTML = `
+          <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-305 flex items-center gap-1.5">
+            <i data-lucide="image" class="w-4 h-4"></i>全景全体写真
+          </div>
+          <div class="h-48 bg-slate-950 flex flex-col items-center justify-center text-xs text-slate-600 gap-1.5">
+            <i data-lucide="image-off" class="w-10 h-10"></i>
+            <span>全体写真は登録されていません</span>
+          </div>
+        `;
+      }
+      container.appendChild(overallCard);
 
-    function renderAiTabContent(tree) {
-      detailAiImageGrid.innerHTML = '';
-
+      // 2. AI Pest images
       const photos = [
         { label: '枝の病害虫写真', data: tree.branchPestResult },
         { label: '幹の病害虫写真', data: tree.trunkPestResult },
@@ -1825,52 +1492,35 @@
       ].filter(item => item.data && item.data.photo);
 
       if (photos.length === 0) {
-        detailAiImageGrid.innerHTML = `
-          <div class="flex flex-col items-center justify-center p-8 bg-slate-950/40 border border-slate-800 rounded-xl text-xs text-slate-500 gap-2">
-            <i data-lucide="image-off" class="w-8 h-8 text-slate-700"></i>
-            <span>アップロードされた異常箇所の写真はありません</span>
-          </div>
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'col-span-1 md:col-span-2 flex flex-col items-center justify-center p-8 bg-slate-950/20 border border-slate-800 rounded-xl text-xs text-slate-500 gap-2';
+        emptyMsg.innerHTML = `
+          <i data-lucide="scan" class="w-8 h-8 text-slate-700"></i>
+          <span>異常箇所の写真およびAI診断ログ履歴はありません</span>
         `;
-        lucide.createIcons();
-        return;
-      }
-
-      photos.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'bg-slate-955/40 border border-slate-800 rounded-xl overflow-hidden shadow-lg';
-        card.innerHTML = `
-          <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-300">${item.label}</div>
-          <div class="h-44 bg-slate-950 flex items-center justify-center overflow-hidden">
-            <img src="${item.data.photo}" alt="AI" class="w-full h-full object-cover" />
-          </div>
-          <div class="p-3 bg-emerald-955/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
-            <div class="flex items-center gap-1.5 font-semibold">
-              <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-              <span>AI判定: ${item.data.name}の可能性</span>
-            </div>
-            <span class="font-bold text-[10px] bg-brand/20 px-1.5 py-0.5 rounded">一致率 ${item.data.rate}</span>
-          </div>
-        `;
-        detailAiImageGrid.appendChild(card);
-      });
-      
-      lucide.createIcons();
-    }
-
-    function switchDetailTab(tabName) {
-      activeDetailTab = tabName;
-      
-      if (tabName === 'summary') {
-        tabBtnSummary.className = 'flex-1 py-2.5 text-brand border-b-2 border-brand';
-        tabBtnAi.className = 'flex-1 py-2.5 text-slate-400 hover:text-slate-200 border-b border-slate-800';
-        tabContentSummary.classList.remove('hidden');
-        tabContentAi.classList.add('hidden');
+        container.appendChild(emptyMsg);
       } else {
-        tabBtnSummary.className = 'flex-1 py-2.5 text-slate-400 hover:text-slate-200 border-b border-slate-800';
-        tabBtnAi.className = 'flex-1 py-2.5 text-brand border-b-2 border-brand';
-        tabContentSummary.classList.add('hidden');
-        tabContentAi.classList.remove('hidden');
+        photos.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-950/40 border border-slate-850 rounded-xl overflow-hidden shadow-lg';
+          card.innerHTML = `
+            <div class="p-3 bg-slate-900 border-b border-slate-800 text-[11px] font-bold text-slate-350">${item.label}</div>
+            <div class="h-48 bg-slate-950 flex items-center justify-center overflow-hidden">
+              <img src="${item.data.photo}" alt="AI" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-3 bg-brand/10 border-t border-slate-800 flex items-center justify-between text-xs text-brand">
+              <div class="flex items-center gap-1.5 font-semibold">
+                <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+                <span>AI診断: ${item.data.name}の可能性</span>
+              </div>
+              <span class="font-bold text-[10px] bg-brand/20 px-1.5 py-0.5 rounded">一致率 ${item.data.rate}</span>
+            </div>
+          `;
+          container.appendChild(card);
+        });
       }
+
+      lucide.createIcons();
     }
 
     /* ==========================================================================
@@ -1894,7 +1544,7 @@
         '幹の異常',
         '根元・根の異常',
         '交通障害・周辺状況',
-        '被害状況・処置・登録'
+        '総合評価・処置'
       ];
       wizardStepTitle.innerText = `STEP ${step} / 6: ${steps[step-1]}`;
       
@@ -1953,18 +1603,6 @@
       }
     }
 
-    function toggleDeclineTextInput(selectEl, textInputId) {
-      const otherInput = document.getElementById(textInputId);
-      if (selectEl.value === 'その他') {
-        otherInput.classList.remove('hidden');
-        otherInput.required = true;
-      } else {
-        otherInput.classList.add('hidden');
-        otherInput.required = false;
-        otherInput.value = '';
-      }
-    }
-
     function resetFormElements() {
       document.getElementById('wizardForm').reset();
       
@@ -1973,16 +1611,10 @@
       document.getElementById('previewOverallPhoto').classList.add('hidden');
       document.getElementById('placeholderOverallPhoto').classList.remove('hidden');
 
-      // Reset overall photo AI results
-      document.getElementById('overallAiSpinner').classList.add('hidden');
-      document.getElementById('overallAiResultBox').classList.add('hidden');
-      document.getElementById('overallAiResultLabel').innerText = 'AI判定: -';
-      document.getElementById('overallAiResultRate').innerText = '-';
-
       // Clear all AI Result boxes
       document.querySelectorAll('#registerView .photo-upload-container').forEach(container => {
         const preview = container.querySelector('img');
-        if (preview && container.id !== 'placeholderOverallPhoto' && container.id !== 'overallPhotoContainer') {
+        if (preview && container.id !== 'placeholderOverallPhoto') {
           preview.src = '';
           preview.classList.add('hidden');
         }
@@ -1995,10 +1627,6 @@
       document.querySelectorAll('#registerView div[class*="bg-emerald-950/20"]').forEach(box => {
         box.classList.add('hidden');
       });
-
-      // Hide other decline text inputs
-      document.getElementById('inputTrunkDeclineOther').classList.add('hidden');
-      document.getElementById('inputRootDeclineOther').classList.add('hidden');
     }
 
     /* ==========================================================================
@@ -2014,11 +1642,14 @@
       const spinner = container.querySelector('.animate-spin').parentNode;
       const resultBox = container.nextElementSibling;
       
-      // Preview local image using Object URL
-      const objectURL = URL.createObjectURL(file);
-      preview.src = objectURL;
-      preview.classList.remove('hidden');
-      placeholder.classList.add('hidden');
+      // Preview local image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
 
       // Trigger AI Analysis mock
       spinner.classList.remove('hidden');
@@ -2037,7 +1668,7 @@
 
         // Store result base64 and data in formState
         formState.aiResults[inputEl.id] = {
-          photo: objectURL,
+          photo: preview.src,
           name: selected.name,
           rate: rate
         };
@@ -2051,12 +1682,15 @@
       const file = e.target.files[0];
       if (!file) return;
 
-      // Preview Image using Object URL
-      const objectURL = URL.createObjectURL(file);
-      formState.overallPhoto = objectURL;
-      document.getElementById('previewOverallPhoto').src = objectURL;
-      document.getElementById('previewOverallPhoto').classList.remove('hidden');
-      document.getElementById('placeholderOverallPhoto').classList.add('hidden');
+      // Preview Image
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        formState.overallPhoto = event.target.result;
+        document.getElementById('previewOverallPhoto').src = formState.overallPhoto;
+        document.getElementById('previewOverallPhoto').classList.remove('hidden');
+        document.getElementById('placeholderOverallPhoto').classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
 
       // Parse EXIF
       EXIF.getData(file, function() {
@@ -2082,33 +1716,9 @@
             state.tempMarker = L.marker(latlng, { icon: tempIcon }).addTo(map);
           }
           
-          alert(`全体写真からGPS撮影位置を抽出しました！\n緯度: ${latitude.toFixed(6)}\n経度: ${longitude.toFixed(6)}`);
+          alert(`全景写真からGPS撮影位置を抽出しました！\n緯度: ${latitude.toFixed(6)}\n経度: ${longitude.toFixed(6)}`);
         }
       });
-
-      // AI Species Detection Mock
-      const aiSpinner = document.getElementById('overallAiSpinner');
-      const aiResultBox = document.getElementById('overallAiResultBox');
-      const aiResultLabel = document.getElementById('overallAiResultLabel');
-      const aiResultRate = document.getElementById('overallAiResultRate');
-      const inputSpecies = document.getElementById('inputSpecies');
-
-      aiSpinner.classList.remove('hidden');
-      aiResultBox.classList.add('hidden');
-
-      setTimeout(() => {
-        aiSpinner.classList.add('hidden');
-
-        const speciesList = ['ケヤキ', 'イチョウ', 'ソメイヨシノ', 'クスノキ', 'トウカエデ'];
-        const randomSpecies = speciesList[Math.floor(Math.random() * speciesList.length)];
-        
-        inputSpecies.value = randomSpecies;
-
-        const confidence = (Math.floor(Math.random() * 15) + 81) + '%'; // 81% - 95%
-        aiResultLabel.innerText = `AI判定: ${randomSpecies}の可能性`;
-        aiResultRate.innerText = `一致率 ${confidence}`;
-        aiResultBox.classList.remove('hidden');
-      }, 2000);
     });
 
     function convertDMSToDD(degrees, minutes, seconds, direction) {
@@ -2140,21 +1750,6 @@
       const nextIdNum = state.trees.length + 1;
       const nextIdStr = 'TR-' + String(nextIdNum).padStart(3, '0');
 
-      // Determine highest danger rank for final summary color badge
-      const risks = [
-        document.getElementById('evalBranchRisk').value,
-        document.getElementById('evalTrunkRisk').value,
-        document.getElementById('evalRootRisk').value,
-        document.getElementById('evalTrafficRisk').value
-      ];
-      let maxRisk = 'I';
-      if (risks.includes('IV')) maxRisk = 'IV';
-      else if (risks.includes('III')) maxRisk = 'III';
-      else if (risks.includes('II')) maxRisk = 'II';
-
-      const declineTrunkVal = document.getElementById('selectTrunkDecline').value;
-      const declineRootVal = document.getElementById('selectRootDecline').value;
-
       const newTree = {
         id: nextIdStr,
         treeNum: document.getElementById('inputTreeNum').value.trim(),
@@ -2167,283 +1762,76 @@
         vigor: parseInt(document.getElementById('selectVigor').value, 10),
         shape: parseInt(document.getElementById('selectShape').value, 10),
         photo: formState.overallPhoto,
-        risk: maxRisk,
         
-        // Branch
+        // Page 6 General Values
+        risk: document.getElementById('selectRisk').value,
+        recommendedAction: document.getElementById('selectRecommendedAction').value,
+        actionNotes: document.getElementById('textareaActionNotes').value.trim(),
+        
+        // Page 2 Branch Anomalies
         branchPosition: parseFloat(document.getElementById('inputBranchPos').value || 0),
         branchDead: document.getElementById('selectBranchDead').value,
         branchAnomaly: document.getElementById('selectBranchAnomaly').value,
         branchJunctionAnomaly: document.getElementById('selectBranchJunction').value,
         branchPestResult: formState.aiResults['inputBranchPestPhoto'] || null,
 
-        // Trunk
+        // Page 3 Trunk Anomalies
         trunkCavity: document.getElementById('selectTrunkCavity').value,
         trunkDecay: document.getElementById('selectTrunkDecay').value,
         trunkPenetration: document.getElementById('selectTrunkPenetration').value,
         trunkBarkLoss: document.getElementById('selectTrunkBarkLoss').value,
         trunkPercussion: document.getElementById('selectTrunkPercussion').value,
-        trunkDecline: declineTrunkVal,
-        trunkDeclineOther: declineTrunkVal === 'その他' ? document.getElementById('inputTrunkDeclineOther').value.trim() : '',
+        trunkDecline: document.getElementById('inputTrunkDecline').value.trim(),
         trunkOtherAnomaly: document.getElementById('textareaTrunkOther').value.trim(),
         trunkPestResult: formState.aiResults['inputTrunkPestPhoto'] || null,
         trunkFruitingResult: formState.aiResults['inputTrunkFruitingPhoto'] || null,
 
-        // Root
+        // Page 4 Root Anomalies
         rootCavity: document.getElementById('selectRootCavity').value,
         rootDecay: document.getElementById('selectRootDecay').value,
         rootPenetration: document.getElementById('selectRootPenetration').value,
         rootBarkLoss: document.getElementById('selectRootBarkLoss').value,
         rootPercussion: document.getElementById('selectRootPercussion').value,
-        rootDecline: declineRootVal,
-        rootDeclineOther: declineRootVal === 'その他' ? document.getElementById('inputRootDeclineOther').value.trim() : '',
+        rootDecline: document.getElementById('inputRootDecline').value.trim(),
         rootGirdling: document.getElementById('selectRootGirdling').value,
         rootExposed: document.getElementById('inputRootExposed').value.trim(),
         rootOtherAnomaly: document.getElementById('textareaRootOther').value.trim(),
         rootPestResult: formState.aiResults['inputRootPestPhoto'] || null,
         rootFruitingResult: formState.aiResults['inputRootFruitingPhoto'] || null,
 
-        // Traffic
+        // Page 5 Surroundings
         sway: document.getElementById('selectSway').value,
         lean: document.getElementById('selectLean').value,
         clearanceRoadway: document.getElementById('selectClearanceRoadway').value,
         clearanceSidewalk: document.getElementById('selectClearanceSidewalk').value,
-        obstructionVisibility: document.getElementById('selectObstructionVisibility').value,
-        obstructionLight: document.getElementById('selectObstructionLight').value,
-        riskWind: document.getElementById('selectRiskWind').value,
-        riskSuppression: document.getElementById('selectRiskSuppression').value,
-        otherSurroundings: document.getElementById('inputOtherSurroundings').value.trim(),
-
-        // Evaluations
-        evalBranch: {
-          damage: document.getElementById('evalBranchDamage').value,
-          urgency: document.getElementById('evalBranchUrgency').value,
-          risk: document.getElementById('evalBranchRisk').value,
-          action: document.getElementById('evalBranchAction').value
-        },
-        evalTrunk: {
-          damage: document.getElementById('evalTrunkDamage').value,
-          urgency: document.getElementById('evalTrunkUrgency').value,
-          risk: document.getElementById('evalTrunkRisk').value,
-          action: document.getElementById('evalTrunkAction').value
-        },
-        evalRoot: {
-          damage: document.getElementById('evalRootDamage').value,
-          urgency: document.getElementById('evalRootUrgency').value,
-          risk: document.getElementById('evalRootRisk').value,
-          action: document.getElementById('evalRootAction').value
-        },
-        evalTraffic: {
-          damage: document.getElementById('evalTrafficDamage').value,
-          urgency: document.getElementById('evalTrafficUrgency').value,
-          risk: document.getElementById('evalTrafficRisk').value,
-          action: document.getElementById('evalTrafficAction').value
-        },
-        actionNotes: document.getElementById('textareaActionNotes').value.trim()
+        obstruction: document.getElementById('selectObstruction').value,
+        otherSurroundings: document.getElementById('inputOtherSurroundings').value.trim()
       };
 
+      // 1. Save data in state array and place new pin on map
       state.trees.push(newTree);
       renderMarkers();
       
-      showSummary();
+      // 2. Reset form input elements and return wizard page back to Page 1
+      resetFormElements();
+      showWizardStep(1);
+
+      // 3. Switch back-end side panel back to list view
+      switchMode('summary');
+      
+      // 4. Immediately open the Center Modal PDF report for the new tree!
+      openReportModal(newTree.id);
     });
-
-    /* ==========================================================================
-       Action & Display Control: showSummary()
-       ========================================================================== */
-    function showSummary() {
-      const newTree = state.trees[state.trees.length - 1];
-      if (!newTree) return;
-
-      // 1. Hide the wizard form container
-      registerView.classList.add('hidden');
-
-      // 2. Populate 1st tab details (basic specs, part severity ratings & recommendation notes)
-      successTreeNum.innerText = newTree.treeNum || '-';
-      successSpecies.innerText = newTree.species || '-';
-      successLatLng.innerText = `${newTree.lat.toFixed(6)}, ${newTree.lng.toFixed(6)}`;
-      successHeight.innerText = newTree.height || '-';
-      successCirc.innerText = newTree.circ || '-';
-      successVigor.innerText = vigorLabels[newTree.vigor] || '-';
-      successShape.innerText = vigorLabels[newTree.shape] || '-';
-      successActionNotes.innerText = newTree.actionNotes || '特記すべき留意点はありません。';
-      
-      const riskDescription = riskLabels[newTree.risk] || `RANK ${newTree.risk}`;
-      successRiskLabel.innerText = riskDescription;
-      
-      let badgeColorClass = 'bg-brand/10 text-brand border-brand/20';
-      if (newTree.risk === 'II') badgeColorClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      if (newTree.risk === 'III') badgeColorClass = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
-      if (newTree.risk === 'IV') badgeColorClass = 'bg-red-500/10 text-red-400 border-red-500/20';
-      
-      successRiskBadge.className = `text-xs px-2.5 py-1 font-bold rounded-lg border ${badgeColorClass}`;
-      successRiskBadge.innerText = `RANK ${newTree.risk}`;
-
-      // Populate success part treatment table
-      successPartTreatmentTable.innerHTML = '';
-      const successParts = [
-        { name: '枝 (Branches)', eval: newTree.evalBranch },
-        { name: '幹 (Trunk)', eval: newTree.evalTrunk },
-        { name: '根元・根 (Root)', eval: newTree.evalRoot },
-        { name: '交通障害 (Traffic)', eval: newTree.evalTraffic }
-      ];
-      successParts.forEach(part => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-slate-800 hover:bg-slate-900/40 transition-colors';
-        let riskColor = 'text-brand';
-        if (part.eval.risk === 'II') riskColor = 'text-amber-400';
-        if (part.eval.risk === 'III') riskColor = 'text-orange-400';
-        if (part.eval.risk === 'IV') riskColor = 'text-red-400';
-        
-        row.innerHTML = `
-          <td class="p-2 font-bold text-slate-300">${part.name}</td>
-          <td class="p-2 ${riskColor} font-bold">RANK ${part.eval.risk}</td>
-          <td class="p-2 text-slate-200">${part.eval.action || 'なし'}</td>
-        `;
-        successPartTreatmentTable.appendChild(row);
-      });
-
-      // Populate success view 2nd tab photo grid with local object URLs & mock AI predictions
-      successPhotosGrid.innerHTML = '';
-      const photosToRender = [
-        { label: '全体（全景写真）', data: newTree.photo ? { photo: newTree.photo, name: 'GPS座標および撮影位置確認済', rate: 'GPS抽出' } : null },
-        { label: '枝の病害虫写真', data: newTree.branchPestResult },
-        { label: '幹の病害虫写真', data: newTree.trunkPestResult },
-        { label: '幹の子実体写真', data: newTree.trunkFruitingResult },
-        { label: '根元の病害虫写真', data: newTree.rootPestResult },
-        { label: '根元の子実体写真', data: newTree.rootFruitingResult }
-      ];
-      
-      let successPhotoCount = 0;
-      photosToRender.forEach(item => {
-        if (!item.data) return;
-        successPhotoCount++;
-        const card = document.createElement('div');
-        card.className = 'bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col sm:flex-row gap-3 p-3';
-        
-        let aiText = '';
-        if (item.data.rate === 'GPS抽出') {
-          aiText = `<div class="text-[10px] text-brand font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>ステータス: GPS座標解析完了</div>`;
-        } else {
-          aiText = `
-            <div class="text-[10px] text-brand font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>AI検出: ${item.data.name}</div>
-            <div class="text-[9px] text-slate-400 mt-0.5">信頼度・一致率: ${item.data.rate}</div>
-          `;
-        }
-
-        card.innerHTML = `
-          <div class="w-full sm:w-20 h-20 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 flex-shrink-0">
-            <img src="${item.data.photo}" alt="${item.label}" class="w-full h-full object-cover" />
-          </div>
-          <div class="flex-1 flex flex-col justify-center py-1">
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${item.label}</span>
-            <div class="mt-1">${aiText}</div>
-          </div>
-        `;
-        successPhotosGrid.appendChild(card);
-      });
-      
-      if (successPhotoCount === 0) {
-        successPhotosGrid.innerHTML = `
-          <div class="flex flex-col items-center justify-center p-8 bg-slate-950/40 border border-slate-800 rounded-xl text-xs text-slate-500 gap-2">
-            <i data-lucide="image-off" class="w-8 h-8 text-slate-700"></i>
-            <span>アップロードされた写真はありません (画像なし)</span>
-          </div>
-        `;
-      }
-
-      // Populate AI inference engine logs
-      generateSuccessAiLogs(newTree);
-
-      // Default to 1st tab
-      switchSuccessTab('summary');
-
-      // Switch application mode to show result container
-      switchMode('summary_result');
-      lucide.createIcons();
-    }
 
     /* ==========================================================================
        Setup Listeners & Initialization
        ========================================================================== */
     triggerRegisterBtn.addEventListener('click', () => switchMode('register'));
-    backToSummaryBtn.addEventListener('click', () => switchMode('summary'));
     cancelRegisterBtn.addEventListener('click', () => switchMode('summary'));
 
     // Wizard navigation controls
     nextStepBtn.addEventListener('click', handleWizardNext);
     prevStepBtn.addEventListener('click', handleWizardPrev);
-
-    // Tab clicks
-    tabBtnSummary.addEventListener('click', () => switchDetailTab('summary'));
-    tabBtnAi.addEventListener('click', () => switchDetailTab('ai'));
-
-    // Reload / New record creator listener
-    reloadBtn.addEventListener('click', () => {
-      location.reload();
-    });
-
-    function switchSuccessTab(tabName) {
-      if (tabName === 'summary') {
-        successTabBtnSummary.className = 'flex-1 py-2 text-brand border-b-2 border-brand';
-        successTabBtnPhotos.className = 'flex-1 py-2 text-slate-400 hover:text-slate-200 border-b border-slate-800';
-        successTabContentSummary.classList.remove('hidden');
-        successTabContentPhotos.classList.add('hidden');
-      } else {
-        successTabBtnSummary.className = 'flex-1 py-2 text-slate-400 hover:text-slate-200 border-b border-slate-800';
-        successTabBtnPhotos.className = 'flex-1 py-2 text-brand border-b-2 border-brand';
-        successTabContentSummary.add('hidden');
-        successTabContentPhotos.classList.remove('hidden');
-      }
-    }
-
-    successTabBtnSummary.addEventListener('click', () => switchSuccessTab('summary'));
-    successTabBtnPhotos.addEventListener('click', () => switchSuccessTab('photos'));
-
-    function generateSuccessAiLogs(tree) {
-      successAiLogs.innerHTML = '';
-      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-      
-      const logLines = [
-        `[INFO] ${timestamp} - Initializing AI inference engine...`,
-        `[INFO] ${timestamp} - Image pipeline load: Overall photo data ready.`,
-        `[SUCCESS] ${timestamp} - Exif metadata parsed: GPS coordinates extracted (${tree.lat.toFixed(5)}, ${tree.lng.toFixed(5)})`,
-        `[INFO] ${timestamp} - Loading YOLOv8 species detection model...`,
-        `[SUCCESS] ${timestamp} - AI Species Prediction completed: ${tree.species}`
-      ];
-
-      if (tree.branchPestResult) {
-        logLines.push(`[SUCCESS] ${timestamp} - Branch anomaly detection: ${tree.branchPestResult.name} (Conf: ${tree.branchPestResult.rate})`);
-      }
-      if (tree.trunkPestResult) {
-        logLines.push(`[SUCCESS] ${timestamp} - Trunk pest detection: ${tree.trunkPestResult.name} (Conf: ${tree.trunkPestResult.rate})`);
-      }
-      if (tree.trunkFruitingResult) {
-        logLines.push(`[SUCCESS] ${timestamp} - Trunk fruiting body identification: ${tree.trunkFruitingResult.name} (Conf: ${tree.trunkFruitingResult.rate})`);
-      }
-      if (tree.rootPestResult) {
-        logLines.push(`[SUCCESS] ${timestamp} - Root flare pest detection: ${tree.rootPestResult.name} (Conf: ${tree.rootPestResult.rate})`);
-      }
-      if (tree.rootFruitingResult) {
-        logLines.push(`[SUCCESS] ${timestamp} - Root flare fruiting body identification: ${tree.rootFruitingResult.name} (Conf: ${tree.rootFruitingResult.rate})`);
-      }
-
-      logLines.push(`[INFO] ${timestamp} - Physical Specs check: H=${tree.height}m, C=${tree.circ}cm, W=${tree.crown}m`);
-      logLines.push(`[INFO] ${timestamp} - Severity matrix: Branch=${tree.evalBranch.risk}, Trunk=${tree.evalTrunk.risk}, Root=${tree.evalRoot.risk}, Traffic=${tree.evalTraffic.risk}`);
-      logLines.push(`[SUCCESS] ${timestamp} - Final Risk evaluation: RANK ${tree.risk}`);
-      logLines.push(`[INFO] ${timestamp} - Storing tree record ${tree.id} to local state memory...`);
-      logLines.push(`[SUCCESS] ${timestamp} - Pipeline completed successfully.`);
-
-      logLines.forEach(line => {
-        const div = document.createElement('div');
-        if (line.includes('[SUCCESS]')) {
-          div.className = 'text-emerald-400 font-semibold';
-        } else {
-          div.className = 'text-slate-400';
-        }
-        div.innerText = line;
-        successAiLogs.appendChild(div);
-      });
-    }
 
     window.addEventListener('DOMContentLoaded', () => {
       initMap();
